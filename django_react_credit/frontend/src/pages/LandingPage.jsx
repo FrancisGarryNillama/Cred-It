@@ -1,17 +1,9 @@
+import { Link } from "react-router-dom";
+import BackgroundLayout from "../components/BackgroundLayout";
+
 function LandingPage() {
   return (
-    <>
-      <div className="absolute inset-0 bg-[url('./citBackground.png')] bg-cover bg-center blur-[12px] opacity-[0.8] z-[-1]"></div>{" "}
-      {/* Blurred background layer */}
-      <header className="bg-color-[#FFCC00] h-[60px] flex items-center justify-center relative">
-        <img src="/navbarCitLogo.png" alt="CIT Logo" className="h-[50px]" />
-        <div className="absolute right-[20px] top-[10px] flex items-center gap-[8px]">
-          <img src="/user-logo.png" alt="User" className="h-[24px]" />
-          <button className="text-[14px] text-[#800000] font-bold">
-            Sign In/Register
-          </button>
-        </div>
-      </header>
+    <BackgroundLayout>
       <main className="text-center mt-[60px]">
         <h1>
           Welcome to <span className="text-[#800000] font-bold">CRED-IT</span>
@@ -30,11 +22,14 @@ function LandingPage() {
           decisions for students and schools alike.
         </p>
         <p className="mt-[2rem] text-[#800000] text-[1.1rem]">
-          <strong>Sign In or Register</strong> to begin <br /> using the
-          software
+          <Link to={"/LoginPage"}>
+            <strong>Sign In</strong>{" "}
+          </Link>{" "}
+          or <strong>Register </strong>
+          to begin <br /> using the software
         </p>
       </main>
-    </>
+    </BackgroundLayout>
   );
 }
 
