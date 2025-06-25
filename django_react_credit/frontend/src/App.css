@@ -1,41 +1,42 @@
-  body, html {
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    height: 100vh;
-  }
+body,
+html {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100vh;
+}
 
-  .App {
-    position: relative;
-    text-align: center;
-    min-height: 100vh;
-    overflow: hidden;
-  }
+.App {
+  position: relative;
+  text-align: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
 
-  .background-blur {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url('./citBackground.png');
-    background-size: cover;
-    background-position: center;
-    filter: blur(12px); /* 8px gives a clearer blur */
-    opacity: 0.8;
-    z-index: -1;
-  }
+.background-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("./citBackground.png");
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px); /* 8px gives a clearer blur */
+  opacity: 0.8;
+  z-index: -1;
+}
 
-  .App::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgba(255, 255, 255, 0.3);
-    z-index: -1;
-  }
+.App::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  z-index: -1;
+}
 
-  .navbar {
-  background-color: #FFCC00; /* CIT Yellow */
+.navbar {
+  background-color: #ffcc00; /* CIT Yellow */
   height: 60px;
   display: flex;
   align-items: center;
@@ -87,5 +88,3 @@
   color: maroon;
   font-size: 1.1rem;
 }
-
-
