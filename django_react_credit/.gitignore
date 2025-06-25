@@ -1,0 +1,21 @@
+# Python virtual environments
+
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# VSCode settings
+.vscode/
+
+# Node.js
+node_modules/
+
+# Django stuff
+*.sqlite3
+*.log
+.env
+
+# OS files
+.DS_Store
+Thumbs.db

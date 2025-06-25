@@ -1,0 +1,201 @@
+/* Reset and global styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  height: 100vh;
+}
+
+/* Wrapper container */
+.App {
+  position: relative;
+  text-align: center;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Background blur layer (image applied via inline style in JSX) */
+.background-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  filter: blur(12px);
+  opacity: 0.8;
+  z-index: -1;
+}
+
+/* White blur overlay on top of image */
+.App::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  z-index: -1;
+}
+
+/* Top navigation bar */
+.navbar {
+  background-color: #FFCC00; /* CIT Yellow */
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* CIT logo inside navbar */
+.logo {
+  height: 50px;
+}
+
+/* Right-side user section in navbar */
+.user-section {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* User icon next to sign-in button */
+.user-icon {
+  height: 24px;
+}
+
+/* Sign In/Register button */
+.sign-link {
+  text-decoration: none;
+  font-size: 14px;
+  color: maroon;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Main content area under navbar */
+.main-content {
+  text-align: center;
+  margin-top: 60px;
+}
+
+/* Highlighted CRED-IT name */
+.highlight {
+  color: maroon;
+  font-weight: bold;
+}
+
+/* Description paragraphs */
+.description {
+  margin-top: 1rem;
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Bold final description */
+.bold {
+  margin-top: 2rem;
+  color: maroon;
+  font-size: 1.1rem;
+}
+
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  width: 400px;
+  max-width: 90%;
+  position: relative;
+  text-align: center;
+}
+
+.modal-logo {
+  height: 60px;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  text-align: left;
+  margin: 1rem 0;
+}
+
+.input-icon {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  background: #f9f9f9;
+}
+
+.input-icon img {
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+.input-icon input {
+  border: none;
+  outline: none;
+  flex-grow: 1;
+  background: transparent;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+.modal-signin {
+  width: 100%;
+  padding: 0.75rem;
+  background: maroon;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+a {
+  color: maroon;
+  cursor: pointer;
+  text-decoration: underline;
+}
