@@ -36,8 +36,7 @@ export default function LoginPage() {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#8B0000"
-                    strokeWidth="2"
-                  >
+                    strokeWidth="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                     <circle cx="12" cy="7" r="4" />
                   </svg>
@@ -62,8 +61,7 @@ export default function LoginPage() {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#8B0000"
-                    strokeWidth="2"
-                  >
+                    strokeWidth="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <circle cx="12" cy="16" r="1" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -86,8 +84,7 @@ export default function LoginPage() {
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="#8B0000"
-                    strokeWidth="2"
-                  >
+                    strokeWidth="2">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                     <circle cx="12" cy="16" r="1" />
                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -106,15 +103,14 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-            >
+              className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition">
               Register
             </button>
           </form>
         </div>
 
         <div className="mt-16 pt-10">
-          <p className="text-xs text-gray-500 text-center">
+          <p className="text-xs text-[#800000] text-center">
             2024 Cebu Institute of Technology University. All rights reserved.
           </p>
         </div>
