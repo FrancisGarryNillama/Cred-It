@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import CollapsableNavBar from "./CollapsableNavBar";
 function BackgroundLayout({ children }) {
   const location = useLocation();
   const navLocation = useLocation();
@@ -8,9 +7,7 @@ function BackgroundLayout({ children }) {
       <div className="absolute inset-0 bg-[url('./citBackground.png')] bg-cover bg-center blur-[12px] opacity-[0.8] z-[-1]"></div>{" "}
       {/* Blurred background layer */}
       <header className="bg-[#FFCC00] h-[60px] flex items-center justify-between relative">
-        <div>
-          {navLocation.pathname === "/HomePage" ? <CollapsableNavBar /> : null}
-        </div>
+        <div></div>
 
         <div>
           <img src="/navbarCitLogo.png" alt="CIT Logo" className="h-[50px]" />
