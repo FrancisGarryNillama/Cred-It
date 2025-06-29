@@ -101,13 +101,14 @@ export default function LoginPage() {
                 Forgot password?
               </a>
             </div>
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-            >
-              Sign In
-            </button>
+            <Link to={"/HomePage"}>
+              <button
+                type="submit"
+                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
+              >
+                Sign In
+              </button>
+            </Link>
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-5">
