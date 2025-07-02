@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import BackgroundLayout from "../components/BackgroundLayout";
 
 export default function LoginPage() {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
