@@ -15,10 +15,9 @@ function BackgroundLayout({ children }) {
   return (
     <>
       <div className="absolute inset-0 bg-[url('./citBackground.png')] bg-cover bg-center blur-[12px] opacity-[0.8] z-[-1]"></div>{" "}
-      {/* Blurred background layer */}
       <header className="bg-[#FFCC00] h-[60px] flex items-center justify-between relative">
         {navLocation.pathname === "/HomePage" && (
-          <CollapsibleNavBar isOpen={navIsOpen} onClose={handleCloseSidebar} />
+          <CollapsibleNavBar isOpen={navIsOpen} />
         )}
         <div className="pl-5">
           <div className="flex flex-col items-center justify-center">
@@ -49,15 +48,23 @@ function BackgroundLayout({ children }) {
             {location.pathname === "/LoginPage" ||
             location.pathname === "/RegisterPage" ? null : (
               <>
-                <div>
-                  <img src="/user-logo.png" alt="User" className="h-[24px]" />
-                </div>
-                <Link to={"./LoginPage"}>Sign In</Link>
+                <Link to={"/LoginPage"}>
+                  <div className="flex items-center justify-center">
+                    <img src="/user-logo.png" alt="User" className="h-[24px]" />
+                  </div>
+                  Sign In
+                </Link>
               </>
             )}
           </div>
         </div>
       </header>
+      {navIsOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-30 z-30"
+          onClick={handleCloseSidebar}
+        ></div>
+      )}
       <div>{children}</div>
     </>
   );

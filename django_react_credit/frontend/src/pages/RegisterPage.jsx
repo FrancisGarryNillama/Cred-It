@@ -1,12 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackgroundLayout from "../components/BackgroundLayout";
+import RegisterDropdown from "../components/RegisterDropdown";
+import { Link } from "react-router-dom";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSignInClick = () => {
     navigate("/login");
@@ -14,7 +18,13 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    setError("");
+    // Registration logic here
+    console.log("Register attempt:", { email, password, rememberMe });
   };
 
   return (
@@ -96,20 +106,35 @@ export default function LoginPage() {
                 <input
                   type="password"
                   placeholder="Confirm password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                   required
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
                 />
               </div>
             </div>
+            {error && (
+              <div className="text-red-600 text-sm mb-3 text-center">
+                {error}
+              </div>
+            )}
+            <div>
+              <h2 className="font-bold">Register As:</h2>
+            </div>
+            <div>
+              <RegisterDropdown />
+            </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-            >
-              Register
-            </button>
+            <div className="mt-5">
+              <Link to="/HomePage">
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
+                >
+                  Register
+                </button>
+              </Link>
+            </div>
           </form>
         </div>
 

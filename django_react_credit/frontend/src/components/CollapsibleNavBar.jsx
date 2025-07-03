@@ -1,7 +1,7 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 // Accept isOpen as a prop from the parent
-export default function CollapsibleNavBar({ isOpen, onClose }) {
+export default function CollapsibleNavBar({ isOpen }) {
   // No internal state or toggle button needed
   return (
     <>
@@ -16,61 +16,46 @@ export default function CollapsibleNavBar({ isOpen, onClose }) {
         <div className="h-full">
           <ul className="space-y-5 font-medium">
             <li>
-              <div className="flex flex-row justify-between">
+              <button
+                type="button"
+                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <span className="whitespace-nowrap">Home</span>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <span className=" whitespace-nowrap">Profile</span>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <span className="whitespace-nowrap">Upload Image</span>
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <span className="whitespace-nowrap">About Us</span>
+              </button>
+            </li>
+            <li>
+              <Link to={"/LoginPage"}>
                 <button
                   type="button"
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                 >
-                  <span>Dashboard</span>
+                  <span className="whitespace-nowrap">Sign Out</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-                >
-                  X
-                </button>
-              </div>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span className="flex-1 whitespace-nowrap">Home</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span className="flex-1 whitespace-nowrap">Profile</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span className="flex-1 whitespace-nowrap">Upload Image</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span className="flex-1 whitespace-nowrap">About</span>
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
-              >
-                <span className="flex-1 whitespace-nowrap">Sign Out</span>
-              </button>
+              </Link>
             </li>
           </ul>
         </div>
