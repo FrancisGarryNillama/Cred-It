@@ -4,17 +4,21 @@ import BackgroundLayout from "../components/BackgroundLayout";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
-  const handleSignInClick = () => {
-    navigate("/login");
-  };
+  const isFormValid = username.trim() !== "" && password.trim() !== "";
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
+    if (!isFormValid) {
+      setShowWarning(true);
+      return;
+    }
+    setShowWarning(false);
+    navigate("/HomePage");
   };
 
   return (
@@ -48,9 +52,10 @@ export default function LoginPage() {
                   </svg>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   placeholder="Username"
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
                 />
@@ -87,6 +92,12 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {showWarning && !isFormValid && (
+              <div className="text-red-600 text-sm mb-3 text-center">
+                Please fill in both username and password.
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-6">
               <label className="flex items-center text-sm text-red-900">
                 <input
@@ -97,18 +108,13 @@ export default function LoginPage() {
                 />
                 Remember me
               </label>
-              <a href="#" className="text-sm text-red-900 hover:underline">
-                Forgot password?
-              </a>
             </div>
-            <Link to={"/HomePage"}>
-              <button
-                type="submit"
-                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-              >
-                Sign In
-              </button>
-            </Link>
+            <button
+              type="submit"
+              className="w-full py-3 bg-red-900 text-white rounded text-base font-medium transition hover:bg-red-800 cursor-pointer"
+            >
+              Sign In
+            </button>
           </form>
 
           <p className="text-center text-sm text-gray-600 mt-5">

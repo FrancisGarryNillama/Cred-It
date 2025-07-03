@@ -15,16 +15,22 @@ function BackgroundLayout({ children }) {
   return (
     <>
       <div className="absolute inset-0 bg-[url('./citBackground.png')] bg-cover bg-center blur-[12px] opacity-[0.8] z-[-1]"></div>{" "}
-      <header className="bg-[#FFCC00] h-[60px] flex items-center justify-between relative">
-        {navLocation.pathname === "/HomePage" && (
+      <header className="fixed top-0 left-0 w-full bg-[#FFCC00] h-[60px] flex items-center justify-between z-50 shadow-md">
+        {(navLocation.pathname === "/HomePage" ||
+          navLocation.pathname === "/AboutUsPage") && (
           <CollapsibleNavBar isOpen={navIsOpen} />
         )}
         <div className="pl-5">
           <div className="flex flex-col items-center justify-center">
-            {navLocation.pathname === "/HomePage" && (
-              <button onClick={handleClick}>
+            {(navLocation.pathname === "/HomePage" ||
+              navLocation.pathname === "/AboutUsPage") && (
+              <button
+                onClick={handleClick}
+                className="group p-2 rounded hover:bg-yellow-300 transition-colors"
+                aria-label="Open navigation menu"
+              >
                 <svg
-                  className="w-6 h-6"
+                  className="w-6 h-6 text-gray-800 group-hover:text-yellow-800 transition-colors"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -65,7 +71,7 @@ function BackgroundLayout({ children }) {
           onClick={handleCloseSidebar}
         ></div>
       )}
-      <div>{children}</div>
+      <div className="pt-[60px]">{children}</div>
     </>
   );
 }

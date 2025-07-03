@@ -2,14 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackgroundLayout from "../components/BackgroundLayout";
 import RegisterDropdown from "../components/RegisterDropdown";
-import { Link } from "react-router-dom";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
 
   const handleSignInClick = () => {
@@ -23,8 +21,9 @@ export default function RegisterPage() {
       return;
     }
     setError("");
-    // Registration logic here
-    console.log("Register attempt:", { email, password, rememberMe });
+
+    alert("Registration successful! Redirecting to login page...");
+    navigate("/LoginPage");
   };
 
   return (
@@ -53,10 +52,10 @@ export default function RegisterPage() {
                   </svg>
                 </div>
                 <input
-                  type="email"
+                  type="text"
                   placeholder="Add a username"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                   className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
                 />
@@ -126,14 +125,12 @@ export default function RegisterPage() {
             </div>
 
             <div className="mt-5">
-              <Link to="/HomePage">
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-                >
-                  Register
-                </button>
-              </Link>
+              <button
+                type="submit"
+                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
+              >
+                Register
+              </button>
             </div>
           </form>
         </div>

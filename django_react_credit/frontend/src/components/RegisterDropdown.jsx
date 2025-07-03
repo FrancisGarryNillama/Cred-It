@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 
 export default function RegisterDropdown() {
-  const [selected, setSelected] = useState("Register As:");
+  const [selected, setSelected] = useState("Select Role");
 
   return (
     <Menu as="div" className="relative inline-block text-left">
