@@ -1,80 +1,61 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import BackgroundLayout from "../components/BackgroundLayout";
+"use client"
+
+import { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import { Mail, Lock, GraduationCap } from "lucide-react"
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [rememberMe, setRememberMe] = useState(false)
 
   const handleSignInClick = () => {
-    navigate("/login");
-  };
+    navigate("/login")
+  }
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
-  };
+    e.preventDefault()
+    console.log("Login attempt:", { email, password, rememberMe })
+  }
 
   return (
-    <BackgroundLayout>
-      <div className="relative w-full max-w-[1200px] mx-auto p-5 z-20 flex-1 flex flex-col items-center justify-center">
-        <div className="bg-white rounded-lg p-10 w-full max-w-md shadow-md mt-16">
-          <h1 className="text-2xl font-bold text-center text-red-900 mb-2">
-            Student Portal
-          </h1>
-          <p className="text-sm text-center text-gray-600 mb-8">
-            Sign in to access your account
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+            <GraduationCap className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <p className="text-gray-600">Sign in to your CRED-IT account</p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="w-full">
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-red-900 mb-2">
-                Email Address
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8B0000"
-                    strokeWidth="2"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
+        {/* Login Form */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="email"
-                  placeholder="Username"
+                  placeholder="Enter your email"
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
               </div>
             </div>
 
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-red-900 mb-2">
-                Password
-              </label>
-              <div className="relative flex items-center">
-                <div className="absolute left-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8B0000"
-                    strokeWidth="2"
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <circle cx="12" cy="16" r="1" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="password"
@@ -82,51 +63,51 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
               </div>
             </div>
 
-            <div className="flex justify-between items-center mb-6">
-              <label className="flex items-center text-sm text-red-900">
-                <input
+            <div className="flex items-center justify-between pb-5">
+              <label className="flex items-center">
+                {/* <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="mr-2"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
-                Remember me
+                <span className="ml-2 text-sm text-gray-600">Remember me</span> */}
               </label>
-              <a href="#" className="text-sm text-red-900 hover:underline">
+              <a href="#" className="text-sm text-blue-600 hover:text-blue-500 font-medium">
                 Forgot password?
               </a>
             </div>
-            <Link to={"/HomePage"}>
+
+            <Link to="/HomePage">
               <button
                 type="submit"
-                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Sign In
               </button>
             </Link>
           </form>
 
-          <p className="text-center text-sm text-gray-600 mt-5">
-            Don't have an account?
-            <Link to={"/RegisterPage"}>
-              <strong className="ml-1 text-red-900 hover:underline">
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link to="/RegisterPage" className="text-blue-600 hover:text-blue-500 font-medium">
                 Register here
-              </strong>
-            </Link>
-          </p>
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <div className="mt-16 pt-10">
-          <p className="text-xs text-[#800000] text-center">
-            2024 Cebu Institute of Technology University. All rights reserved.
-          </p>
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">© 2024 CRED-IT. All rights reserved.</p>
         </div>
       </div>
-    </BackgroundLayout>
-  );
+    </div>
+  )
 }
