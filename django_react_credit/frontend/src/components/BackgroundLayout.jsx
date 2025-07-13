@@ -15,22 +15,17 @@ function BackgroundLayout({ children }) {
   return (
     <>
       <div className="absolute inset-0 bg-[url('./citBackground.png')] bg-cover bg-center blur-[12px] opacity-[0.8] z-[-1]"></div>{" "}
-      <header className="fixed top-0 left-0 w-full bg-[#FFCC00] h-[60px] flex items-center justify-between z-50 shadow-md">
-        {(navLocation.pathname === "/HomePage" ||
-          navLocation.pathname === "/AboutUsPage") && (
-          <CollapsibleNavBar isOpen={navIsOpen} />
+      {/* Blurred background layer */}
+      <header className="bg-[#FFCC00] h-[60px] flex items-center justify-between relative">
+        {navLocation.pathname === "/HomePage" && (
+          <CollapsibleNavBar isOpen={navIsOpen} onClose={handleCloseSidebar} />
         )}
         <div className="pl-5">
           <div className="flex flex-col items-center justify-center">
-            {(navLocation.pathname === "/HomePage" ||
-              navLocation.pathname === "/AboutUsPage") && (
-              <button
-                onClick={handleClick}
-                className="group p-2 rounded hover:bg-yellow-300 transition-colors"
-                aria-label="Open navigation menu"
-              >
+            {navLocation.pathname === "/HomePage" && (
+              <button onClick={handleClick}>
                 <svg
-                  className="w-6 h-6 text-gray-800 group-hover:text-yellow-800 transition-colors"
+                  className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"

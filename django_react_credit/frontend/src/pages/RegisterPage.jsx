@@ -1,146 +1,137 @@
+"use client";
+
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import BackgroundLayout from "../components/BackgroundLayout";
-import RegisterDropdown from "../components/RegisterDropdown";
+import { useNavigate, Link } from "react-router-dom";
+import { User, Mail, Lock, GraduationCap } from "lucide-react";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleSignInClick = () => {
-    navigate("/login");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    setError("");
-
-    alert("Registration successful! Redirecting to login page...");
-    navigate("/LoginPage");
+    console.log("Registration attempt:", formData);
+    // Add your registration logic here
   };
 
   return (
-    <BackgroundLayout>
-      <div className="relative w-full max-w-[1200px] mx-auto p-5 z-20 flex-1 flex flex-col items-center justify-center">
-        <div className="bg-white rounded-lg p-10 w-full max-w-md shadow-md mt-16">
-          <h1 className="text-2xl font-bold text-center text-red-900 mb-8">
-            Register <br /> an account
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+            <GraduationCap className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Create Account
           </h1>
+          <p className="text-gray-600">Join CRED-IT to get started</p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="w-full">
-            <div className="mb-5">
-              <label className="block text-sm font-medium text-red-900 mb-2"></label>
-              <div className="relative flex items-center">
-                <div className="absolute left-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8B0000"
-                    strokeWidth="2"
-                  >
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                    <circle cx="12" cy="7" r="4" />
-                  </svg>
+        {/* Registration Form */}
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="text"
-                  placeholder="Add a username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  name="name"
+                  placeholder="Enter your username"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
               </div>
             </div>
 
-            <div className="mb-5">
-              <div className="relative flex items-center">
-                <div className="absolute left-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8B0000"
-                    strokeWidth="2"
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <circle cx="12" cy="16" r="1" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   type="password"
-                  placeholder="Add a password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                 />
               </div>
-              <div className="relative flex items-center mt-5">
-                <div className="absolute left-3">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#8B0000"
-                    strokeWidth="2"
-                  >
-                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                    <circle cx="12" cy="16" r="1" />
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                  </svg>
-                </div>
-                <input
-                  type="password"
-                  placeholder="Confirm password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded text-sm focus:outline-none"
-                />
-              </div>
-            </div>
-            {error && (
-              <div className="text-red-600 text-sm mb-3 text-center">
-                {error}
-              </div>
-            )}
-            <div>
-              <h2 className="font-bold">Register As:</h2>
-            </div>
-            <div>
-              <RegisterDropdown />
             </div>
 
-            <div className="mt-5">
-              <button
-                type="submit"
-                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
-              >
-                Register
-              </button>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                />
+              </div>
             </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Create Account
+            </button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{" "}
+              <Link
+                to="/LoginPage"
+                className="text-blue-600 hover:text-blue-500 font-medium"
+              >
+                Sign in here
+              </Link>
+            </p>
+          </div>
         </div>
 
-        <div className="mt-16 pt-10">
-          <p className="text-xs text-[#800000] text-center">
-            2024 Cebu Institute of Technology University. All rights reserved.
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-gray-500">
+            © 2024 CRED-IT. All rights reserved.
           </p>
         </div>
       </div>
-    </BackgroundLayout>
+    </div>
   );
 }
