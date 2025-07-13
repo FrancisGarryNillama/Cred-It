@@ -1,12 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
-import AboutUsPage from "./pages/AboutUsPage";
 import reportWebVitals from "./reportWebVitals";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
@@ -15,7 +13,6 @@ const router = createBrowserRouter([
   { path: "/LoginPage", element: <LoginPage /> },
   { path: "/RegisterPage", element: <RegisterPage /> },
   { path: "/HomePage", element: <HomePage /> },
-  { path: "/AboutUsPage", element: <AboutUsPage /> },
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

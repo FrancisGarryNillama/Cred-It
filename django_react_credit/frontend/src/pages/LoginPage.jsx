@@ -46,7 +46,8 @@ export default function LoginPage() {
                 </div>
                 <input
                   type="email"
-                  placeholder="Username"
+                  placeholder="Enter your email"
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
@@ -73,12 +74,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {showWarning && !isFormValid && (
-              <div className="text-red-600 text-sm mb-3 text-center">
-                Please fill in both username and password.
-              </div>
-            )}
-
             <div className="flex items-center justify-between pb-5">
               <label className="flex items-center">
                 {/* <input
@@ -89,14 +84,18 @@ export default function LoginPage() {
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span> */}
               </label>
-              <a href="#" className="text-sm text-red-900 hover:underline">
+              <a
+                href="#"
+                className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              >
                 Forgot password?
               </a>
             </div>
-            <Link to={"/HomePage"}>
+
+            <Link to="/HomePage">
               <button
                 type="submit"
-                className="w-full py-3 bg-red-900 text-white rounded text-base font-medium hover:bg-red-800 transition"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Sign In
               </button>

@@ -49,24 +49,16 @@ function BackgroundLayout({ children }) {
             {location.pathname === "/LoginPage" ||
             location.pathname === "/RegisterPage" ? null : (
               <>
-                <Link to={"/LoginPage"}>
-                  <div className="flex items-center justify-center">
-                    <img src="/user-logo.png" alt="User" className="h-[24px]" />
-                  </div>
-                  Sign In
-                </Link>
+                <div>
+                  <img src="/user-logo.png" alt="User" className="h-[24px]" />
+                </div>
+                <Link to={"./LoginPage"}>Sign In</Link>
               </>
             )}
           </div>
         </div>
       </header>
-      {navIsOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-30 z-30"
-          onClick={handleCloseSidebar}
-        ></div>
-      )}
-      <div className="pt-[60px]">{children}</div>
+      <div>{children}</div>
     </>
   );
 }
