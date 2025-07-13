@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
-import AuthCard from "../components/AuthCard";
 import RegisterPageCard from "../components/RegisterPageCard";
 
 export default function RegisterPage() {
@@ -43,7 +42,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Registration Form */}
-        <AuthCard>
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
           <RegisterPageCard
             formData={formData}
             handleInputChange={handleInputChange}
@@ -60,7 +59,7 @@ export default function RegisterPage() {
               </Link>
             </p>
           </div>
-        </AuthCard>
+        </div>
 
         {/* Footer */}
         <div className="mt-8 text-center">
