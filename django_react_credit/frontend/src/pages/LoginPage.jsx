@@ -1,22 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Mail, Lock, GraduationCap } from "lucide-react";
 
 export default function LoginPage() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-
-  const handleSignInClick = () => {
-    navigate("/login");
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password, rememberMe });
+    console.log("Login attempt:", { email, password });
   };
 
   return (
@@ -34,7 +28,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+        <div className="bg-white shadow-lg rounded-lg p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -84,12 +78,12 @@ export default function LoginPage() {
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span> */}
               </label>
-              <a
-                href="#"
+              <button
+                type="button"
                 className="text-sm text-blue-600 hover:text-blue-500 font-medium"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             <Link to="/HomePage">
@@ -101,7 +95,6 @@ export default function LoginPage() {
               </button>
             </Link>
           </form>
-
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
