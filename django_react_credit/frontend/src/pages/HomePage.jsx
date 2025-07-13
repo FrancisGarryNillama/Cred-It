@@ -1,44 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
-import {
-  Menu,
-  User,
-  Upload,
-  X,
-  GraduationCap,
-  Home,
-  UserCircle,
-  FileImage,
-  Info,
-} from "lucide-react";
+import { useState } from "react";
+import { Menu, User, GraduationCap } from "lucide-react";
 import { Button } from "../components/ui/button";
 import SidebarDropdown from "../components/SidebarDropdown";
+import ImageUploader from "../components/ImageUploader";
+import ImagePreviewModal from "../components/ImagePreviewModal";
 
 export default function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const fileInputRef = useRef(null);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      if (file.type === "image/jpeg" || file.type === "image/png") {
-        setSelectedFile(file);
-        setPreviewUrl(URL.createObjectURL(file));
-      } else {
-        alert("Please select a JPEG or PNG image file.");
-        setSelectedFile(null);
-        setPreviewUrl(null);
-        event.target.value = "";
-      }
-    }
   };
 
   const handleContinueClick = () => {
@@ -56,10 +32,6 @@ export default function HomePage() {
   const handleDialogContinue = () => {
     console.log("Proceeding with file:", selectedFile);
     setIsDialogOpen(false);
-  };
-
-  const handleUploadAreaClick = () => {
-    fileInputRef.current.click();
   };
 
   return (
@@ -131,27 +103,11 @@ export default function HomePage() {
             </h2>
 
             {/* Upload Area */}
-            <div
-              className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 p-12 text-center mb-6 hover:border-blue-400 hover:bg-blue-50 transition-all cursor-pointer group"
-              onClick={handleUploadAreaClick}
-            >
-              <input
-                type="file"
-                accept="image/jpeg, image/png"
-                onChange={handleFileChange}
-                ref={fileInputRef}
-                style={{ display: "none" }}
-              />
-              <Upload className="w-12 h-12 text-gray-400 group-hover:text-blue-500 mx-auto mb-4 transition-colors" />
-              <p className="text-gray-600 group-hover:text-blue-600 transition-colors">
-                Click or drag image to this area to upload
-              </p>
-              {selectedFile && (
-                <p className="text-green-600 mt-3 font-medium">
-                  ✓ File selected: {selectedFile.name}
-                </p>
-              )}
-            </div>
+            <ImageUploader
+              selectedFile={selectedFile}
+              setSelectedFile={setSelectedFile}
+              setPreviewUrl={setPreviewUrl}
+            />
 
             <p className="text-gray-500 text-sm mb-8 text-center">
               Supported formats: JPEG, PNG
@@ -176,57 +132,12 @@ export default function HomePage() {
         </div>
 
         {/* Preview Dialog */}
-        {isDialogOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  Image Preview
-                </h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleDialogClose}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
-
-              <div className="p-6">
-                {previewUrl && (
-                  <div className="mb-6">
-                    <img
-                      src={previewUrl || "/placeholder.svg"}
-                      alt="Preview"
-                      className="max-w-full h-auto mx-auto rounded-lg border border-gray-200"
-                    />
-                  </div>
-                )}
-                <p className="text-gray-600 text-sm mb-6 text-center">
-                  Please ensure the image is high quality and clearly readable
-                  for accurate processing.
-                </p>
-
-                <div className="flex justify-end gap-4">
-                  <Button
-                    variant="outline"
-                    className="px-6 py-2 border-gray-300 hover:bg-gray-50 bg-transparent"
-                    onClick={handleDialogClose}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white"
-                    onClick={handleDialogContinue}
-                  >
-                    Continue
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        <ImagePreviewModal
+          isOpen={isDialogOpen}
+          previewUrl={previewUrl}
+          onClose={handleDialogClose}
+          onContinue={handleDialogContinue}
+        />
       </main>
     </div>
   );
