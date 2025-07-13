@@ -1,4 +1,4 @@
-import { Home, UserCircle, FileImage, Info } from "lucide-react";
+import { Home, UserCircle, LogOut, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function SidebarDropdown({ sidebarOpen }) {
@@ -28,14 +28,14 @@ export default function SidebarDropdown({ sidebarOpen }) {
             to="/AboutUsPage"
             className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
           >
-            <FileImage className="w-5 h-5" />
+            <Info className="w-5 h-5" />
             About Us
           </Link>
           <Link
             to="/LoginPage"
             className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
           >
-            <Info className="w-5 h-5" />
+            <LogOut className="w-5 h-5" />
             Sign Out
           </Link>
         </nav>
