@@ -1,18 +1,47 @@
 "use client";
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
 import LoginPageCard from "../components/LoginPageCard";
+import axios from "axios";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt:", { email, password });
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/login/", {
+        email,
+        password,
+      });
+
+      console.log("Login Response:", res.data);
+
+      if (res.status === 200) {
+        const { name } = res.data; // <- Get the name from response
+        localStorage.setItem("userName", name); // <- Store it
+        setError("Login successful! Redirecting...");
+        navigate("/HomePage");
+      }
+    } catch (err) {
+      if (err.response) {
+        const backendError = 
+        err.response.data.error ||
+        err.response.data.message || 
+        "Invalid email or password";
+        setError(backendError);
+      } else {
+        setError("Something went wrong. Try again.");
+      }
+    }
   };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
@@ -37,6 +66,10 @@ export default function LoginPage() {
             setPassword={setPassword}
             handleSubmit={handleSubmit}
           />
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}

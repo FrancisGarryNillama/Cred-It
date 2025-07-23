@@ -4,14 +4,18 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { GraduationCap } from "lucide-react";
 import RegisterPageCard from "../components/RegisterPageCard";
+import axios from "axios";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
-    name: "",
+    full_name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [message, setMessage] = useState(""); // <-- For feedback
+  const [isError, setIsError] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,10 +25,50 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Registration attempt:", formData);
-    // Add your registration logic here
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log("Form data:", formData); // 🧪 Log the data
+
+  if (formData.password !== formData.confirmPassword) {
+    alert("Passwords do not match");
+    return;
+  }
+
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/api/register/", {
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+      });
+
+      setIsError(false);
+      setMessage("Successfully created!");
+
+      // ✅ Clear form fields after success
+      setFormData({
+        full_name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+    } catch (error) {
+      console.error("Registration error:", error);
+      console.error("Full error response:", error.response);
+      setIsError(true);
+
+      if (error.response) {
+        setFormData({
+        password: "",
+        confirmPassword: "",
+      });
+    const msg =
+      error.response.data?.message || "Something went wrong. Try again.";
+      setMessage(msg);
+    } else {
+      setMessage("Server is unreachable. Check connection.");
+    }
+    }
   };
 
   return (
@@ -48,6 +92,11 @@ export default function RegisterPage() {
             handleInputChange={handleInputChange}
             handleSubmit={handleSubmit}
           />
+          {message && (
+            <p className="mt-4 text-center text-sm font-medium text-red-500">
+              {message}
+            </p>
+          )}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}

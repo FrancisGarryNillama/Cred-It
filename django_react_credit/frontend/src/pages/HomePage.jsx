@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, User, GraduationCap } from "lucide-react";
 import { Button } from "../components/ui/button";
 import SidebarDropdown from "../components/SidebarDropdown";
@@ -12,6 +12,14 @@ export default function HomePage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("userName");
+    if (storedName) {
+      setUserName(storedName);
+    }
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -61,7 +69,10 @@ export default function HomePage() {
         </div>
         <div className="flex items-center gap-2 text-gray-700">
           <User className="w-5 h-5" />
-          <span className="text-sm font-medium">(name)</span>
+          <span className="text-sm font-medium">
+            {userName ? userName : "No name"}
+          </span>
+
         </div>
       </header>
 
