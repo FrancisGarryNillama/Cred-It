@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import App from "./App";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -12,6 +11,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 const router = createBrowserRouter([
   { path: "/", element: <LandingPage /> },
   { path: "/LoginPage", element: <LoginPage /> },
+  { path: "/LandingPage", element: <LandingPage /> }, 
   { path: "/RegisterPage", element: <RegisterPage /> },
   { path: "/HomePage", element: <HomePage /> },
 ]);

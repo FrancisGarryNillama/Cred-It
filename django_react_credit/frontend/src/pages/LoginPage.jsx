@@ -1,23 +1,47 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import { Mail, Lock, GraduationCap } from "lucide-react"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { GraduationCap } from "lucide-react";
+import LoginPageCard from "../components/LoginPageCard";
+import axios from "axios";
 
 export default function LoginPage() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [rememberMe, setRememberMe] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  const handleSignInClick = () => {
-    navigate("/login")
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/login/", {
+        email,
+        password,
+      });
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Login attempt:", { email, password, rememberMe })
-  }
+      console.log("Login Response:", res.data);
+
+      if (res.status === 200) {
+        const { name } = res.data; // <- Get the name from response
+        localStorage.setItem("userName", name); // <- Store it
+        setError("Login successful! Redirecting...");
+        navigate("/HomePage");
+      }
+    } catch (err) {
+      if (err.response) {
+        const backendError = 
+        err.response.data.error ||
+        err.response.data.message || 
+        "Invalid email or password";
+        setError(backendError);
+      } else {
+        setError("Something went wrong. Try again.");
+      }
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4">
@@ -27,76 +51,32 @@ export default function LoginPage() {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
             <GraduationCap className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
           <p className="text-gray-600">Sign in to your CRED-IT account</p>
         </div>
 
         {/* Login Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pb-5">
-              <label className="flex items-center">
-                {/* <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="ml-2 text-sm text-gray-600">Remember me</span> */}
-              </label>
-              <a href="#" className="text-sm text-blue-600 hover:text-blue-500 font-medium">
-                Forgot password?
-              </a>
-            </div>
-
-            <Link to="/HomePage">
-              <button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                Sign In
-              </button>
-            </Link>
-          </form>
+        <div className="bg-white shadow-lg rounded-lg p-8">
+          <LoginPageCard
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            handleSubmit={handleSubmit}
+          />
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{" "}
-              <Link to="/RegisterPage" className="text-blue-600 hover:text-blue-500 font-medium">
+              <Link
+                to="/RegisterPage"
+                className="text-blue-600 hover:text-blue-500 font-medium"
+              >
                 Register here
               </Link>
             </p>
@@ -105,9 +85,11 @@ export default function LoginPage() {
 
         {/* Footer */}
         <div className="mt-8 text-center">
-          <p className="text-xs text-gray-500">© 2024 CRED-IT. All rights reserved.</p>
+          <p className="text-xs text-gray-500">
+            © 2024 CRED-IT. All rights reserved.
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

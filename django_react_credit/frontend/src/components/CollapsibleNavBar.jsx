@@ -1,61 +1,60 @@
-import { Menu, User } from "lucide-react";
-import { Button } from "../components/ui/button";
+import React from "react";
+import { Link } from "react-router-dom";
 
-export default function CollapsableNavBar({ sidebarOpen, toggleSidebar }) {
+export default function CollapsibleNavBar({ isOpen }) {
   return (
     <>
-      {/* Header */}
-      <header className="bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-3 flex items-center justify-between relative z-30">
-        <Button variant="ghost" size="sm" className="text-red-800 hover:bg-yellow-600" onClick={toggleSidebar}>
-          <Menu className="w-6 h-6" />
-        </Button>
-
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-red-800 rounded-full flex items-center justify-center">
-            <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center">
-              <div className="text-red-800 text-xs font-bold">CIT</div>
-            </div>
-          </div>
-          <div className="text-red-800 font-bold text-lg">
-            <div>CEBU INSTITUTE OF TECHNOLOGY</div>
-            <div className="text-center text-sm tracking-wider">UNIVERSITY</div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 text-red-800">
-          <User className="w-6 h-6" />
-          <span className="text-sm">(name)</span>
-        </div>
-      </header>
-
-      {/* Sidebar */}
-      <div
-        className={`fixed top-[80px] left-0 h-[calc(100vh-80px)] bg-red-800 text-white z-20 transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } w-64`}
+      <aside
+        id="default-sidebar"
+        className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform dark:bg-[#800000] px-3 py-4 overflow-y-auto ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+        aria-label="Sidebar"
       >
-        <div className="pt-4 px-4">
-          <nav className="space-y-2">
-            <a href="#" className="block py-3 px-4 text-white hover:bg-red-700 rounded transition-colors">
-              Home
-            </a>
-            <a href="#" className="block py-3 px-4 text-white hover:bg-red-700 rounded transition-colors">
-              Profile
-            </a>
-            <a href="#" className="block py-3 px-4 text-white hover:bg-red-700 rounded transition-colors">
-              Upload Img
-            </a>
-            <a href="#" className="block py-3 px-4 text-white hover:bg-red-700 rounded transition-colors">
-              About Us
-            </a>
-          </nav>
-        </div>
-      </div>
+        <div className="h-full">
+          <ul className="space-y-5 font-medium">
+            <li>
+              <Link to={"/HomePage"}>
+                <button
+                  type="button"
+                  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                >
+                  <span className="whitespace-nowrap">Home</span>
+                </button>
+              </Link>
+            </li>
+            <li>
+              <button
+                type="button"
+                className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+              >
+                <span className=" whitespace-nowrap">Profile</span>
+              </button>
+            </li>
 
-      {/* Overlay */}
-      {sidebarOpen && (
-        <div className="fixed top-[80px] left-0 right-0 bottom-0 bg-black bg-opacity-50 z-10" onClick={toggleSidebar} />
-      )}
+            <li>
+              <Link to={"/AboutUsPage"}>
+                <button
+                  type="button"
+                  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                >
+                  <span className="whitespace-nowrap">About Us</span>
+                </button>
+              </Link>
+            </li>
+            <li>
+              <Link to={"/LoginPage"}>
+                <button
+                  type="button"
+                  className="flex w-full items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                >
+                  <span className="whitespace-nowrap">Sign Out</span>
+                </button>
+              </Link>
+            </li>
+          </ul>
+        </div>
+      </aside>
     </>
   );
 }
