@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { Upload } from "lucide-react";
-import { Button } from "./ui/button";
 
 export default function ImageUploader({
   selectedFile,
