@@ -1,8 +1,13 @@
 from django.db import models
 
 class TorTransferee(models.Model):
+
     student_name = models.CharField(max_length=100)
     school_name = models.CharField(max_length=255)
+
+    #student name
+    #name of school 
+
     subject_code = models.CharField(max_length=50)
     subject_description = models.CharField(max_length=255)
     student_year = models.CharField(max_length=20)
@@ -15,6 +20,9 @@ class TorTransferee(models.Model):
         ('summer', 'Summer'),
     ]
     semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES)
+
+    semester = models.CharField(max_length=20) #3 values only first,second, summer
+
     school_year_offered = models.CharField(max_length=20)
     total_academic_units = models.FloatField()
     final_grade = models.FloatField()
