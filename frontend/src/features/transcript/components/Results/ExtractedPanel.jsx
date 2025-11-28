@@ -1,0 +1,181 @@
+import React, { useState } from 'react';
+import { torApi, requestApi } from '../../../../api';
+import { Modal, ModalContent, Button, ConfirmDialog, Loader } from '../../../../components/common';
+import { useNotification } from '../../../../hooks';
+import ComparisonTable from './ComparisonTable';
+import SummaryView from './SummaryView';
+
+export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
+  const { school_tor = [], ocr_results = [] } = data || {};
+  const [showSummary, setShowSummary] = useState(false);
+  const [summaryData, setSummaryData] = useState([]);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [hideRequestButton, setHideRequestButton] = useState(false);
+  const [showConfirmPanel, setShowConfirmPanel] = useState(false);
+  const [showSyncCompleted, setShowSyncCompleted] = useState(false);
+  
+  const { showSuccess, showError } = useNotification();
+
+  const handleCancel = async () => {
+    try {
+      await torApi.deleteOcr(accountId);
+    } catch (err) {
+      console.error('Failed to delete OCR entries:', err);
+    }
+    onClose();
+  };
+
+  const handleRequestCreditation = async () => {
+    if (isRequesting) return;
+    setIsRequesting(true);
+
+    try {
+      const result = await requestApi.requestTor(accountId);
+      showSuccess('Request Creditation submitted successfully!');
+      setHideRequestButton(true);
+      setTimeout(() => onClose(), 15000);
+    } catch (error) {
+      const errorMsg = error.message || 'Failed to request creditation.';
+      showError(errorMsg);
+
+      if (errorMsg.includes('Please Fill up your Profile First')) {
+        setHideRequestButton(true);
+      }
+    } finally {
+      setIsRequesting(false);
+    }
+  };
+
+  const handleSeeResult = () => {
+    if (isProcessing) return;
+    setShowConfirmPanel(true);
+  };
+
+  const handleConfirmContinue = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      // Copy TOR entries
+      const copyResult = await torApi.copyTor(accountId);
+
+      // Process remarks
+      const processedData = (copyResult.data || []).map((row) => {
+        const units = parseFloat(row.total_academic_units);
+        let remarks = 'Failed / Invalid Units';
+        if (units && !isNaN(units) && units > 0 && units <= 15) {
+          remarks = 'Passed';
+        }
+        return { ...row, remarks };
+      });
+
+      const passedEntries = processedData.filter((r) => r.remarks === 'Passed');
+      const failedEntries = processedData.filter(
+        (r) => r.remarks === 'Failed / Invalid Units'
+      );
+
+      // Update backend
+      await torApi.updateTorResults(
+        accountId,
+        failedEntries.map((e) => e.subject_code),
+        passedEntries.map((e) => ({
+          subject_code: e.subject_code,
+          remarks: e.remarks,
+        }))
+      );
+
+      setShowConfirmPanel(false);
+      setShowSyncCompleted(true);
+      showSuccess('Result processed successfully! Click "Completed" to finalize.');
+    } catch (err) {
+      console.error('Error processing TOR:', err);
+      showError('Error occurred while processing results.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCompleted = async () => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      const result = await torApi.syncCompleted(accountId);
+      setSummaryData(result.data);
+      setShowSyncCompleted(false);
+      setShowSummary(true);
+      showSuccess('Sync completed successfully! Summary is now available.');
+    } catch (err) {
+      console.error(err);
+      showError('Error occurred while completing sync.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  return (
+    <>
+      <Modal isOpen={isOpen} onClose={handleCancel} title="Extracted TOR Results" size="full">
+        <ModalContent>
+          {!showSummary && !showConfirmPanel && !showSyncCompleted && (
+            <ComparisonTable schoolTor={school_tor} ocrResults={ocr_results} />
+          )}
+
+          {showSummary && <SummaryView data={summaryData} />}
+
+          {showSummary && !hideRequestButton && (
+            <div className="flex justify-center mt-4 space-x-4">
+              <Button variant="outline" onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button
+                variant="success"
+                onClick={handleRequestCreditation}
+                loading={isRequesting}
+                disabled={isRequesting}
+              >
+                Request Accreditation
+              </Button>
+            </div>
+          )}
+
+          {!showSummary && !showConfirmPanel && !showSyncCompleted && (
+            <div className="flex justify-center mt-8">
+              <Button
+                onClick={handleSeeResult}
+                loading={isProcessing}
+                disabled={isProcessing}
+              >
+                See Result
+              </Button>
+            </div>
+          )}
+        </ModalContent>
+      </Modal>
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirmPanel}
+        onClose={() => setShowConfirmPanel(false)}
+        onConfirm={handleConfirmContinue}
+        title="Heads up"
+        message="This will take some time, depending on your Internet Connection."
+        confirmText="Continue"
+        loading={isProcessing}
+      />
+
+      {/* Sync Completed Dialog */}
+      <ConfirmDialog
+        isOpen={showSyncCompleted}
+        onClose={() => {}}
+        onConfirm={handleCompleted}
+        title="Sync Completed"
+        message='Processing is complete. Please click "Completed" to finalize the results.'
+        confirmText="Completed"
+        cancelText=""
+        loading={isProcessing}
+      />
+    </>
+  );
+}
