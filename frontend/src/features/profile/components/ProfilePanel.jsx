@@ -1,0 +1,37 @@
+import React from 'react';
+import { Modal, ModalContent, ModalFooter, Button } from '../../../components/common';
+import { useProfile } from '../hooks/useProfile';
+import ProfileForm from './ProfileForm';
+
+export default function ProfilePanel({ userId, isOpen, onClose }) {
+  const { profile, updateProfile, saveProfile, loading, profileExists } = useProfile(userId);
+
+  const handleSave = async () => {
+    const success = await saveProfile();
+    if (success) {
+      setTimeout(() => onClose(), 1500);
+    }
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Profile"
+      size="md"
+    >
+      <ModalContent>
+        <ProfileForm profile={profile} onUpdate={updateProfile} />
+      </ModalContent>
+
+      <ModalFooter>
+        <Button variant="outline" onClick={onClose} disabled={loading}>
+          Cancel
+        </Button>
+        <Button onClick={handleSave} loading={loading}>
+          {profileExists ? 'Update Profile' : 'Save Profile'}
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+}
