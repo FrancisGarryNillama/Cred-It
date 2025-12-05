@@ -1,108 +1,214 @@
+"""
+Views for requestTOR app using WorkflowService.
+Notice how much simpler this is compared to the old code!
+"""
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
-from django.utils import timezone
+from core.responses import APIResponse
+from core.exceptions import ServiceException
+from core.decorators import handle_service_exceptions
+from core.services.workflow import WorkflowService
 from .models import RequestTOR
 from .serializers import RequestTORSerializer
-from profiles.models import Profile  # ✅ check if profile exists
+from profiles.models import Profile
+from pendingRequest.models import PendingRequest
 from finalDocuments.models import listFinalTor
+import logging
 
-#DocumentPage
-@api_view(["POST"])
-def update_request_tor_status(request):
-    account_id = request.data.get("account_id", "").strip()
-    new_status = request.data.get("status")
-
-    if not account_id or not new_status:
-        return Response({"detail": "account_id and status are required."}, status=400)
-
-    try:
-        print("Searching RequestTOR for accountID:", account_id)
-        request_tor = RequestTOR.objects.get(accountID=account_id)
-        request_tor.status = new_status
-        request_tor.save()
-        return Response({"detail": f"Status updated to {new_status}"}, status=200)
-
-    except RequestTOR.DoesNotExist:
-        return Response({"detail": f"RequestTOR entry not found for accountID '{account_id}'"}, status=404)
+logger = logging.getLogger(__name__)
 
 
-
-@api_view(["POST"])
-def finalize_request(request):
-    """
-    Finalize a RequestTOR entry — moves it into listFinalTor with 'Finalized' status
-    and timestamps the accepted_date.
-    """
-    account_id = request.data.get("account_id")
-
-    if not account_id:
-        return Response({"error": "Missing account_id"}, status=status.HTTP_400_BAD_REQUEST)
-
-    try:
-        tor_request = RequestTOR.objects.get(accountID=account_id)
-    except RequestTOR.DoesNotExist:
-        return Response({"error": "RequestTOR entry not found"}, status=status.HTTP_404_NOT_FOUND)
-
-    # Create or update final record
-    listFinalTor.objects.update_or_create(
-        accountID=tor_request.accountID,
-        defaults={
-            "applicant_name": tor_request.applicant_name,
-            "status": "Finalized",
-            "request_date": tor_request.request_date,
-            "accepted_date": timezone.now(),
-        },
-    )
-
-    # Optionally delete the original RequestTOR entry (uncomment if you want to move, not copy)
-    # tor_request.delete()
-
-    return Response(
-        {"message": "Request successfully finalized and moved to listFinalTor."},
-        status=status.HTTP_200_OK,
-    )
-#DocumentPage
-
-@api_view(['GET'])
-def get_all_requests(request):
-    requests = RequestTOR.objects.all()
-    serializer = RequestTORSerializer(requests, many=True)
-    return Response(serializer.data)
-
-@api_view(["POST"])
+@api_view(['POST'])
+@handle_service_exceptions
 def create_request_tor(request):
+    """
+    Create a new TOR request.
+    
+    POST /api/request-tor/
+    
+    Request:
+        {
+            "account_id": "STUDENT001"
+        }
+    """
     account_id = request.data.get("account_id")
-
+    
     if not account_id:
-        return Response({"error": "Missing account_id"}, status=status.HTTP_400_BAD_REQUEST)
-
-    # ✅ Check if Profile exists
+        return APIResponse.error("account_id is required")
+    
+    # Check if profile exists
     try:
         profile = Profile.objects.get(user_id=account_id)
     except Profile.DoesNotExist:
-        return Response(
-            {"error": "Please Fill up your Profile First, This can be found in the Navbar"},
-            status=status.HTTP_400_BAD_REQUEST
+        return APIResponse.error(
+            "Please complete your profile first. This can be found in the Navbar"
         )
-
-    # ✅ Create RequestTOR
+    
+    # Create request
     request_tor = RequestTOR.objects.create(
         accountID=account_id,
-        applicant_name=profile.name,
-        status="Pending",
-        request_date=timezone.now(),
+        applicant_name=profile.name or account_id,
+        status=RequestTOR.Status.PENDING
+    )
+    
+    serializer = RequestTORSerializer(request_tor)
+    
+    return APIResponse.created(
+        serializer.data,
+        "TOR request created successfully"
     )
 
-    serializer = RequestTORSerializer(request_tor)
-    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-#---------------------
 @api_view(['GET'])
-def track_user_progress(request):
-    accountID = request.GET.get('accountID')
-    if not accountID:
-        return Response({"error": "Missing accountID"}, status=400)
+def get_all_requests(request):
+    """
+    Get all TOR requests.
+    
+    GET /api/requestTOR/
+    """
+    requests = WorkflowService.get_workflow_records(
+        model=RequestTOR,
+        order_by=['-request_date']
+    )
+    
+    serializer = RequestTORSerializer(requests, many=True)
+    return APIResponse.success(serializer.data)
 
-    exists = RequestTOR.objects.filter(accountID=accountID).exists()
-    return Response({"exists": exists})
+
+@api_view(['POST'])
+@handle_service_exceptions
+def update_request_tor_status(request):
+    """
+    Update status of a TOR request.
+    
+    POST /api/update_status/
+    
+    Request:
+        {
+            "account_id": "STUDENT001",
+            "status": "Accepted"
+        }
+    """
+    account_id = request.data.get("account_id")
+    new_status = request.data.get("status")
+    
+    updated = WorkflowService.update_status(
+        model=RequestTOR,
+        account_id=account_id,
+        new_status=new_status,
+        field_name='accountID'
+    )
+    
+    serializer = RequestTORSerializer(updated)
+    
+    return APIResponse.success(
+        serializer.data,
+        f"Status updated to {new_status}"
+    )
+
+
+@api_view(['POST'])
+@handle_service_exceptions
+def accept_request(request):
+    """
+    Accept request and move to PendingRequest stage.
+    
+    POST /api/accept-request/
+    
+    Request:
+        {
+            "account_id": "STUDENT001"
+        }
+    """
+    account_id = request.data.get("account_id")
+    
+    # Use WorkflowService to transition
+    WorkflowService.transition_to_next_stage(
+        account_id=account_id,
+        from_model=RequestTOR,
+        to_model=PendingRequest,
+        from_field='accountID',
+        to_field='applicant_id',
+        status_update='Pending',
+        delete_from=True
+    )
+    
+    return APIResponse.success(
+        message="Request accepted and moved to pending review"
+    )
+
+
+@api_view(['DELETE'])
+@handle_service_exceptions
+def deny_request(request, applicant_id):
+    """
+    Deny request and clean up all related data.
+    
+    DELETE /api/deny/<applicant_id>/
+    """
+    from profiles.models import Profile
+    from curriculum.models import CompareResultTOR
+    
+    # Use WorkflowService for bulk cleanup
+    deleted = WorkflowService.bulk_delete_related(
+        account_id=applicant_id,
+        models_to_clean=[
+            (Profile, 'user_id'),
+            (CompareResultTOR, 'account_id'),
+            (RequestTOR, 'accountID'),
+        ]
+    )
+    
+    return APIResponse.success(
+        deleted,
+        "Request denied and all related data deleted"
+    )
+
+
+@api_view(['POST'])
+@handle_service_exceptions
+def finalize_request(request):
+    """
+    Finalize request and move to final documents.
+    
+    POST /api/finalize_request/
+    
+    Request:
+        {
+            "account_id": "STUDENT001"
+        }
+    """
+    account_id = request.data.get("account_id")
+    
+    # Transition to final stage
+    WorkflowService.transition_to_next_stage(
+        account_id=account_id,
+        from_model=RequestTOR,
+        to_model=listFinalTor,
+        from_field='accountID',
+        to_field='accountID',
+        status_update='Finalized',
+        delete_from=True
+    )
+    
+    return APIResponse.success(
+        message="Request finalized successfully"
+    )
+
+
+@api_view(['GET'])
+@handle_service_exceptions
+def track_user_progress(request):
+    """
+    Check if user has a request in this stage.
+    
+    GET /api/track_user_progress/?accountID=STUDENT001
+    """
+    account_id = request.GET.get('accountID')
+    
+    exists = WorkflowService.check_progress(
+        model=RequestTOR,
+        account_id=account_id,
+        field_name='accountID'
+    )
+    
+    return APIResponse.success({'exists': exists})

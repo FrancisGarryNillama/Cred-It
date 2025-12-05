@@ -1,53 +1,98 @@
+"""
+Views for finalDocuments app using WorkflowService.
+"""
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from django.utils import timezone
-
-from pendingRequest.models import PendingRequest
+from core.responses import APIResponse
+from core.exceptions import ServiceException
+from core.decorators import handle_service_exceptions
+from core.services.workflow import WorkflowService
 from .models import listFinalTor
 from .serializers import listFinalTorSerializer
+from pendingRequest.models import PendingRequest
+import logging
 
-@api_view(["POST"])
+logger = logging.getLogger(__name__)
+
+
+@api_view(['POST'])
+@handle_service_exceptions
 def finalize_request(request):
-    account_id = request.data.get("account_id")
-    if not account_id:
-        return Response({"detail": "account_id is required."}, status=400)
-
-    try:
-        # Get the PendingRequest entry
-        pending = PendingRequest.objects.get(applicant_id=account_id)
-
-        # Move to listFinalTor with updated status and accepted_date
-        final_entry = listFinalTor.objects.create(
-            accountID=pending.applicant_id,
-            applicant_name=pending.applicant_name,
-            status="Finalized",                     # ✅ Set status
-            request_date=pending.request_date,
-            accepted_date=timezone.now()           # ✅ Set current time
-        )
-
-        # Optionally, delete from PendingRequest
-        pending.delete()
-
-        return Response({"success": True, "detail": "Request finalized successfully."})
-
-    except PendingRequest.DoesNotExist:
-        return Response({"detail": f"No PendingRequest found for account_id '{account_id}'"}, status=404)
-    except Exception as e:
-        return Response({"detail": str(e)}, status=500)
+    """
+    Finalize request from pending to final documents.
     
-@api_view(["GET"])
-def get_all_final_tor(request):
-    queryset = listFinalTor.objects.all()
-    serializer = listFinalTorSerializer(queryset, many=True)
-    return Response(serializer.data)
+    POST /api/finalDocuments/finalize_request/
+    
+    Request:
+        {
+            "account_id": "STUDENT001"
+        }
+    """
+    account_id = request.data.get("account_id")
+    
+    # Transition using WorkflowService
+    WorkflowService.transition_to_next_stage(
+        account_id=account_id,
+        from_model=PendingRequest,
+        to_model=listFinalTor,
+        from_field='applicant_id',
+        to_field='accountID',
+        status_update='Finalized',
+        delete_from=True
+    )
+    
+    return APIResponse.success(
+        message="Request finalized successfully"
+    )
 
 
-#---------------------
 @api_view(['GET'])
-def track_user_progress(request):
-    accountID = request.GET.get('accountID')
-    if not accountID:
-        return Response({"error": "Missing accountID"}, status=400)
+def get_all_final_tor(request):
+    """
+    Get all finalized TOR documents.
+    
+    GET /api/finalDocuments/listFinalTor/
+    """
+    documents = WorkflowService.get_workflow_records(
+        model=listFinalTor,
+        order_by=['-accepted_date']
+    )
+    
+    serializer = listFinalTorSerializer(documents, many=True)
+    return APIResponse.success(serializer.data)
 
-    exists = listFinalTor.objects.filter(accountID=accountID).exists()
-    return Response({"exists": exists})
+
+@api_view(['GET'])
+@handle_service_exceptions
+def track_user_progress(request):
+    """
+    Check if user has finalized documents.
+    
+    GET /api/finalDocuments/track_user_progress/?accountID=STUDENT001
+    """
+    account_id = request.GET.get('accountID')
+    
+    exists = WorkflowService.check_progress(
+        model=listFinalTor,
+        account_id=account_id,
+        field_name='accountID'
+    )
+    
+    return APIResponse.success({'exists': exists})
+
+
+@api_view(['GET'])
+def get_workflow_statistics(request):
+    """
+    Get statistics across all workflow stages.
+    
+    GET /api/finalDocuments/statistics/
+    """
+    from requestTOR.models import RequestTOR
+    
+    stats = {
+        'request_stage': WorkflowService.get_workflow_statistics(RequestTOR),
+        'pending_stage': WorkflowService.get_workflow_statistics(PendingRequest),
+        'final_stage': WorkflowService.get_workflow_statistics(listFinalTor)
+    }
+    
+    return APIResponse.success(stats)
