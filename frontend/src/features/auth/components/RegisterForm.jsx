@@ -17,6 +17,11 @@ export default function RegisterForm({ onClose, onSuccess }) {
       return;
     }
 
+    if (accountPass.length < 8) {
+      alert('Password must be at least 8 characters long');
+      return;
+    }
+
     if (accountPass !== confirmPass) {
       alert('Passwords do not match');
       return;

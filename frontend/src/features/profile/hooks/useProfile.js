@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { profileApi } from '../../../api';
 import { useNotification } from '../../../hooks';
+import { torApi, trackingApi, requestApi } from "../../../api"; 
 
 /**
  * Profile hook - Updated for new backend
@@ -319,5 +320,8 @@ export function useDepartment() {
   };
 }
 
-// Export all hooks
-export { useProfile, useTorUpload, useTracking, useDepartment };
+// Note: Each hook should be in its own file
+// useProfile.js exports useProfile
+// useTorUpload.js exports useTorUpload  
+// useTracking.js exports useTracking
+// useDepartment.js exports useDepartment
