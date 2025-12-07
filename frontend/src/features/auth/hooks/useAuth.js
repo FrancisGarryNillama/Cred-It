@@ -1,30 +1,40 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../../../api';
 import { useNotification } from '../../../hooks';
+import { useAuthContext, USER_ROLES } from '../../../context';
 
 export function useAuth() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { showSuccess, showError } = useNotification();
+  const { login: contextLogin, logout: contextLogout, user } = useAuthContext();
   const [loading, setLoading] = useState(false);
 
-  const login = async (accountId, accountPass) => {
+  const login = async (accountID, accountPass) => {
     setLoading(true);
     try {
-      const response = await authApi.login(accountId, accountPass);
+      // Call the context login directly with username and password
+      const result = await contextLogin(accountID, accountPass);
 
-      if (response.success) {
-        localStorage.setItem('userName', accountId);
-        showSuccess(response.message || 'Login successful!');
+      if (result.success) {
+        showSuccess('Login successful!');
 
-        const status = response.data.status;
-        if (status === 'Student') {
-          navigate('/HomePage');
-        } else if (status === 'Faculty' || status === 'Admin') {
-          navigate('/DepartmentHome');
+
+        // Navigate based on role
+        const from = location.state?.from;
+
+        if (from && from !== '/') {
+          navigate(from, { replace: true });
+        } else if (result.user?.role === USER_ROLES.STUDENT) {
+          navigate('/HomePage', { replace: true });
+        } else if (result.user?.role === USER_ROLES.FACULTY) {
+          navigate('/DepartmentHome', { replace: true });
         } else {
-          showError('Invalid account status');
+          showError('Unauthorized role');
         }
+      } else {
+        showError(result.error || 'Login failed');
       }
     } catch (error) {
       showError(error.message || 'Login failed');
@@ -33,22 +43,12 @@ export function useAuth() {
     }
   };
 
-  const register = async (accountId, accountPass) => {
+  const register = async (accountID, accountPass) => {
     setLoading(true);
     try {
-      if (accountPass.length < 8) {
-        showError('Password must be at least 8 characters long');
-        return false;
-      }
-
-      const response = await authApi.register(accountId, accountPass);
-
-      if (response.success) {
-        showSuccess(response.message || 'Registration successful!');
-        return true;
-      }
-
-      return false;
+      const data = await authApi.register(accountID, accountPass);
+      showSuccess(data.message || 'Registration successful!');
+      return true;
     } catch (error) {
       showError(error.message || 'Registration failed');
       return false;
@@ -57,40 +57,20 @@ export function useAuth() {
     }
   };
 
-  const changePassword = async (accountId, oldPassword, newPassword) => {
+  const logout = async () => {
     setLoading(true);
     try {
-      const response = await authApi.changePassword(accountId, oldPassword, newPassword);
-      if (response.success) {
-        showSuccess(response.message || 'Password changed successfully!');
-        return true;
-      }
-      return false;
+      // Call logout API to invalidate token on server
+      await authApi.logout();
     } catch (error) {
-      showError(error.message || 'Password change failed');
-      return false;
+      console.warn('Logout API error:', error);
     } finally {
+      // Always clear local state
+      contextLogout();
       setLoading(false);
+      navigate('/', { replace: true });
     }
   };
 
-  const getAccountInfo = async (accountId) => {
-    setLoading(true);
-    try {
-      const response = await authApi.getAccountInfo(accountId);
-      return response.data;
-    } catch (error) {
-      showError(error.message || 'Failed to fetch account info');
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const logout = () => {
-    localStorage.removeItem('userName');
-    navigate('/');
-  };
-
-  return { login, register, changePassword, getAccountInfo, logout, loading };
+  return { login, register, logout, loading };
 }

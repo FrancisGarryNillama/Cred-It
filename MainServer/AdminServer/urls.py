@@ -1,38 +1,32 @@
 """
-Main URL configuration for the Credit System.
+URL configuration for backend project.
+
+The `urlpatterns` list routes URLs to views. For more information please see:
+    https://docs.djangoproject.com/en/5.2/topics/http/urls/
+Examples:
+Function views
+    1. Add an import:  from my_app import views
+    2. Add a URL to urlpatterns:  path('', views.home, name='home')
+Class-based views
+    1. Add an import:  from other_app.views import Home
+    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
+Including another URLconf
+    1. Import the include() function: from django.urls import include, path
+    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
-    # Admin interface
     path('admin/', admin.site.urls),
-    
-    # API endpoints - all apps with namespaces
-    path('api/', include('creditapp.urls', namespace='creditapp')),
-    path('api/', include('torchecker.urls', namespace='torchecker')),
-    path('api/', include('curriculum.urls', namespace='curriculum')),
-    path('api/', include('profiles.urls', namespace='profiles')),
-    path('api/', include('requestTOR.urls', namespace='requesttor')),
-    path('api/pendingRequest/', include('pendingRequest.urls', namespace='pendingrequest')),
-    path('api/finalDocuments/', include('finalDocuments.urls', namespace='finaldocuments')),
+    path('api/', include('torchecker.urls')),
+    path('api/', include('creditapp.urls')),
+    path("api/", include("curriculum.urls")),
+    path("api/", include("profiles.urls")),
+    path("api/", include("requestTOR.urls")), 
+    path("api/pendingRequest/", include("pendingRequest.urls")),
+    path("api/finalDocuments/", include("finalDocuments.urls")),
+    path('', include('torchecker.urls')),
 ]
-
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    
-    # Add debug toolbar in development
-    if 'debug_toolbar' in settings.INSTALLED_APPS:
-        import debug_toolbar
-        urlpatterns = [
-            path('__debug__/', include(debug_toolbar.urls)),
-        ] + urlpatterns
-
-# Custom admin site configuration
-admin.site.site_header = "Credit Evaluation System Administration"
-admin.site.site_title = "Credit System Admin"
-admin.site.index_title = "Welcome to Credit Evaluation System"

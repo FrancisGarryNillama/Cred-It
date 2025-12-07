@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import { Modal, ModalContent, Button, Loader } from '../../../components/common';
 
 export default function DemoResults({ 

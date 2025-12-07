@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { torApi, requestApi } from '../../../../api';
-import { Modal, ModalContent, Button, ConfirmDialog, Loader } from '../../../../components/common';
+import { Modal, ModalContent, Button, ConfirmDialog } from '../../../../components/common';
 import { useNotification } from '../../../../hooks';
 import ComparisonTable from './ComparisonTable';
 import SummaryView from './SummaryView';
+import { CheckCircle2, FileCheck, Sparkles } from 'lucide-react';
 
 export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
   const { school_tor = [], ocr_results = [] } = data || {};
@@ -14,7 +15,7 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
   const [hideRequestButton, setHideRequestButton] = useState(false);
   const [showConfirmPanel, setShowConfirmPanel] = useState(false);
   const [showSyncCompleted, setShowSyncCompleted] = useState(false);
-  
+
   const { showSuccess, showError } = useNotification();
 
   const handleCancel = async () => {
@@ -31,7 +32,7 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
     setIsRequesting(true);
 
     try {
-      const result = await requestApi.requestTor(accountId);
+      await requestApi.requestTor(accountId);
       showSuccess('Request Creditation submitted successfully!');
       setHideRequestButton(true);
       setTimeout(() => onClose(), 15000);
@@ -125,30 +126,54 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
           {showSummary && <SummaryView data={summaryData} />}
 
           {showSummary && !hideRequestButton && (
-            <div className="flex justify-center mt-4 space-x-4">
-              <Button variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button
-                variant="success"
-                onClick={handleRequestCreditation}
-                loading={isRequesting}
-                disabled={isRequesting}
-              >
-                Request Accreditation
-              </Button>
+            <div className="mt-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+              <div className="max-w-2xl mx-auto text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full">
+                    <CheckCircle2 className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Ready to Submit</h3>
+                <p className="text-gray-600 mb-6">
+                  Your results have been processed successfully. Submit your accreditation request now!
+                </p>
+                <div className="flex justify-center gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="px-6"
+                  >
+                    Cancel
+                  </Button>
+                  <button
+                    onClick={handleRequestCreditation}
+                    disabled={isRequesting}
+                    className="group relative px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      <span>{isRequesting ? 'Submitting...' : 'Request Accreditation'}</span>
+                      <FileCheck className="w-5 h-5" />
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
           {!showSummary && !showConfirmPanel && !showSyncCompleted && (
-            <div className="flex justify-center mt-8">
-              <Button
+            <div className="mt-8 flex justify-center">
+              <button
                 onClick={handleSeeResult}
-                loading={isProcessing}
                 disabled={isProcessing}
+                className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                See Result
-              </Button>
+                <div className="flex items-center gap-3">
+                  <FileCheck className="w-6 h-6" />
+                  <span className="text-lg">{isProcessing ? 'Processing...' : 'See Result'}</span>
+                  <Sparkles className="w-6 h-6 animate-pulse" />
+                </div>
+              </button>
             </div>
           )}
         </ModalContent>
@@ -168,7 +193,7 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
       {/* Sync Completed Dialog */}
       <ConfirmDialog
         isOpen={showSyncCompleted}
-        onClose={() => {}}
+        onClose={() => { }}
         onConfirm={handleCompleted}
         title="Sync Completed"
         message='Processing is complete. Please click "Completed" to finalize the results.'

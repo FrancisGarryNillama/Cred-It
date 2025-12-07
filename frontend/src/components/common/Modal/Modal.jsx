@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
-import { Button } from '../Button/Button';
 
 export function Modal({ 
   isOpen, 
@@ -22,6 +21,17 @@ export function Modal({
     };
   }, [isOpen]);
 
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const sizes = {
@@ -33,19 +43,23 @@ export function Modal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
       <div 
-        className={`bg-white rounded-2xl shadow-2xl ${sizes[size]} w-full max-h-[90vh] overflow-hidden flex flex-col`}
+        className={`bg-white rounded-2xl shadow-2xl ${sizes[size]} w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex justify-between items-center p-6 border-b border-gray-200">
-            {title && <h3 className="text-xl font-semibold text-gray-900">{title}</h3>}
+          <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100 bg-gray-50/50">
+            {title && <h3 className="text-xl font-bold text-gray-900">{title}</h3>}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -68,7 +82,7 @@ export function ModalContent({ children, className = '' }) {
 
 export function ModalFooter({ children, className = '' }) {
   return (
-    <div className={`flex justify-end gap-3 p-6 border-t border-gray-200 ${className}`}>
+    <div className={`flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50/50 ${className}`}>
       {children}
     </div>
   );

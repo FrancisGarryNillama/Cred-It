@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useImageEditor } from '../../hooks/useImageEditor';
 import EditorDialog from './EditorDialog';
 
 export default function ImageEditorWrapper({ image, isOpen, onClose, onSave }) {
   const editor = useImageEditor();
 
-  const handleImageLoad = (e) => {
-    const { width, height } = e.currentTarget;
+  const handleImageLoad = () => {
     const defaultCrop = {
       unit: '%',
       width: 90,

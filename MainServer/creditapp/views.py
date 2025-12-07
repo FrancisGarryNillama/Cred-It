@@ -1,191 +1,73 @@
-"""
-API views for credit account operations.
-Views should be thin - business logic is in services.
-"""
-from rest_framework.decorators import api_view
-from rest_framework import status
-from core.responses import APIResponse
-from core.exceptions import ServiceException
-from core.decorators import handle_service_exceptions
-from .services import CreditAccountService
-from .serializers import (
-    RegisterSerializer,
-    LoginSerializer,
-    PasswordChangeSerializer,
-    CreditAccountSerializer
-)
-import logging
+from django.http import JsonResponse
+from django.contrib.auth.hashers import make_password, check_password
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import CreditAccount
 
-logger = logging.getLogger(__name__)
-
-
-@api_view(['POST'])
-@handle_service_exceptions
+@csrf_exempt
 def register_credit_profile(request):
-    """
-    Register a new credit account.
-    
-    POST /api/register/
-    
-    Request body:
-        {
-            "account_id": "STUDENT001",
-            "account_pass": "password123",
-            "status": "Student"  // optional, defaults to Student
-        }
-    
-    Response:
-        {
-            "success": true,
-            "message": "Account registered successfully",
-            "data": {
-                "account_id": "STUDENT001",
-                "status": "Student"
-            }
-        }
-    """
-    serializer = RegisterSerializer(data=request.data)
-    
-    if not serializer.is_valid():
-        return APIResponse.validation_error(
-            "Validation failed",
-            serializer.errors
-        )
-    
-    # Create account using service
-    account = CreditAccountService.register_account(
-        account_id=serializer.validated_data['account_id'],
-        account_pass=serializer.validated_data['account_pass'],
-        status=serializer.validated_data.get('status', 'Student')
-    )
-    
-    return APIResponse.created(
-        data={
-            'account_id': account.account_id,
-            'status': account.status
-        },
-        message="Account registered successfully"
-    )
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            account_id = data.get("AccountID")
+            account_pass = data.get("AccountPass")
 
+            if not account_id or not account_pass:
+                return JsonResponse({"error": "AccountID and Password are required"}, status=400)
 
-@api_view(['POST'])
-@handle_service_exceptions
+            if CreditAccount.objects.filter(AccountID=account_id).exists():
+                return JsonResponse({"error": "(ID taken, try again.)"}, status=409)
+
+            # Save with hashed password
+            credit_profile = CreditAccount(
+                AccountID=account_id,
+                AccountPass=make_password(account_pass),  
+                Status="Student"
+            )
+            credit_profile.save()
+
+            return JsonResponse({"message": "Registered successfully!"}, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@csrf_exempt
 def login_credit_profile(request):
-    """
-    Login to credit account.
-    
-    POST /api/login/
-    
-    Request body:
-        {
-            "account_id": "STUDENT001",
-            "account_pass": "password123"
-        }
-    
-    Response:
-        {
-            "success": true,
-            "message": "Login successful",
-            "data": {
-                "account_id": "STUDENT001",
-                "status": "Student",
-                "last_login": "2024-01-15T10:30:00Z"
-            }
-        }
-    """
-    serializer = LoginSerializer(data=request.data)
-    
-    if not serializer.is_valid():
-        return APIResponse.validation_error(
-            "Validation failed",
-            serializer.errors
-        )
-    
-    # Authenticate using service
-    result = CreditAccountService.authenticate_account(
-        account_id=serializer.validated_data['account_id'],
-        account_pass=serializer.validated_data['account_pass']
-    )
-    
-    return APIResponse.success(
-        data=result,
-        message="Login successful"
-    )
+    if request.method == "POST":
+        try:
+            print(f"Request body: {request.body}")
+            print(f"Request headers: {request.headers}")
+            
+            data = json.loads(request.body)
+            print(f"Parsed data: {data}")
+            
+            account_id = data.get("AccountID")
+            account_pass = data.get("AccountPass")
+            
+            print(f"AccountID: {account_id}, AccountPass: {'***' if account_pass else 'EMPTY'}")
 
+            if not account_id or not account_pass:
+                return JsonResponse({"error": "AccountID and Password are required"}, status=400)
 
-@api_view(['POST'])
-@handle_service_exceptions
-def change_password(request):
-    """
-    Change account password.
-    
-    POST /api/change-password/
-    
-    Request body:
-        {
-            "account_id": "STUDENT001",
-            "old_password": "oldpass123",
-            "new_password": "newpass123"
-        }
-    """
-    serializer = PasswordChangeSerializer(data=request.data)
-    
-    if not serializer.is_valid():
-        return APIResponse.validation_error(
-            "Validation failed",
-            serializer.errors
-        )
-    
-    CreditAccountService.update_password(
-        account_id=serializer.validated_data['account_id'],
-        old_password=serializer.validated_data['old_password'],
-        new_password=serializer.validated_data['new_password']
-    )
-    
-    return APIResponse.success(
-        message="Password changed successfully"
-    )
+            try:
+                profile = CreditAccount.objects.get(AccountID=account_id)
+                role = profile.Status.capitalize()  # ensure "Student" or "Faculty"
 
+                if role == "Student":
+                    if check_password(account_pass, profile.AccountPass):
+                        return JsonResponse({"message": "Login successful", "status": role}, status=200)
+                    else:
+                        return JsonResponse({"error": "Incorrect password"}, status=401)
+                else:  # Faculty/Admin
+                    if account_pass == profile.AccountPass:
+                        return JsonResponse({"message": "Login successful", "status": role}, status=200)
+                    else:
+                        return JsonResponse({"error": "Incorrect password"}, status=401)
 
-@api_view(['GET'])
-def get_account_info(request):
-    """
-    Get account information.
-    
-    GET /api/account/<account_id>/
-    """
-    account_id = request.GET.get('account_id')
-    
-    if not account_id:
-        return APIResponse.error("account_id parameter is required")
-    
-    try:
-        account = CreditAccountService.get_account(account_id)
-        serializer = CreditAccountSerializer(account)
-        return APIResponse.success(serializer.data)
-    except ServiceException as e:
-        return APIResponse.error(e.message, status_code=e.status_code)
+            except CreditAccount.DoesNotExist:
+                return JsonResponse({"error": "Account not found"}, status=404)
 
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
 
-@api_view(['GET'])
-def get_statistics(request):
-    """
-    Get account statistics.
-    
-    GET /api/statistics/
-    
-    Response:
-        {
-            "success": true,
-            "data": {
-                "Student": 150,
-                "Faculty": 20,
-                "Admin": 5,
-                "total": 175,
-                "active": 170,
-                "inactive": 5
-            }
-        }
-    """
-    stats = CreditAccountService.get_account_statistics()
-    return APIResponse.success(stats)
+    return JsonResponse({"error": "Invalid request"}, status=400)

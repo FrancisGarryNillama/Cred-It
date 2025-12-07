@@ -42,101 +42,124 @@ export default function EditorDialog({
             />
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row gap-8 items-start h-[70vh]">
-            {/* Edit View */}
-            <div className="w-full md:w-1/2">
-              <h4 className="text-lg font-medium text-center mb-2">Edit</h4>
-              <div
-                style={{
-                  perspective: '1000px',
-                  height: '400px',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <ReactCrop
-                  crop={crop}
-                  onChange={onCropChange}
-                  onComplete={onCropComplete}
-                >
-                  <img
-                    ref={imgRef}
-                    alt="Edit"
-                    src={image.src}
-                    style={{
-                      transform: `scale(${previewScale}) ${imageTransformStyle.transform}`,
-                      maxHeight: '100%',
-                      maxWidth: '100%',
-                      objectFit: 'contain',
-                      display: 'block',
-                      margin: '0 auto',
-                    }}
-                    onLoad={onImageLoad}
-                  />
-                </ReactCrop>
-              </div>
-            </div>
-
-            {/* Live Preview */}
-            <div className="w-full md:w-1/2 text-center">
-              <h4 className="text-lg font-medium text-center mb-2">
-                Live Preview
-              </h4>
-              <div
-                ref={previewRef}
-                className="relative w-full h-[400px] mx-auto rounded-md overflow-hidden"
-                style={{
-                  perspective: '1000px',
-                  border: '1px solid #ccc',
-                  background: '#f8f8f8',
-                }}
-              >
+          <div className="flex flex-col h-full max-h-[calc(100vh-200px)]">
+            {/* Edit and Preview Section - Takes remaining space */}
+            <div className="flex-1 flex flex-col md:flex-row gap-4 items-stretch min-h-0">
+              {/* Edit View */}
+              <div className="flex-1 flex flex-col min-h-0">
+                <h4 className="text-lg font-medium text-center mb-2">Edit</h4>
                 <div
+                  className="flex-1 min-h-0 mx-auto rounded-md overflow-auto scrollbar-thin"
                   style={{
-                    ...imageTransformStyle,
-                    transform: `scale(${previewScale}) ${imageTransformStyle.transform}`,
+                    perspective: '1000px',
+                    border: '1px solid #ccc',
+                    background: '#f8f8f8',
                     width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
                   }}
                 >
-                  <img
-                    alt="Live Preview"
-                    src={image.src}
+                  <div
                     style={{
-                      objectFit: 'contain',
-                      maxWidth: '100%',
-                      maxHeight: '100%',
-                      clipPath: percentCrop
-                        ? `inset(${percentCrop.y}% ${
-                            100 - (percentCrop.x + percentCrop.width)
-                          }% ${
-                            100 - (percentCrop.y + percentCrop.height)
-                          }% ${percentCrop.x}%)`
-                        : 'none',
-                      transform: `scale(${previewScale})`,
-                      transformOrigin: 'center',
+                      ...imageTransformStyle,
+                      transform: `scale(${previewScale}) ${imageTransformStyle.transform}`,
+                      width: '100%',
+                      minHeight: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'flex-start',
+                      paddingTop: '0.5rem',
+                      paddingLeft: '1rem',
+                      paddingRight: '1rem',
+                      paddingBottom: '1rem',
                     }}
-                  />
+                  >
+                    {/* Wrapper to limit ReactCrop size in fullscreen */}
+                    <div style={{ maxWidth: '85%', maxHeight: '85%' }}>
+                      <ReactCrop
+                        crop={crop}
+                        onChange={onCropChange}
+                        onComplete={onCropComplete}
+                      >
+                        <img
+                          ref={imgRef}
+                          alt="Edit"
+                          src={image.src}
+                          style={{
+                            objectFit: 'contain',
+                            maxWidth: '100%',
+                            maxHeight: '100%',
+                            width: 'auto',
+                            height: 'auto',
+                          }}
+                          onLoad={onImageLoad}
+                        />
+                      </ReactCrop>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Live Preview */}
+              <div className="flex-1 flex flex-col min-h-0">
+                <h4 className="text-lg font-medium text-center mb-2">
+                  Live Preview
+                </h4>
+                <div
+                  ref={previewRef}
+                  className="flex-1 min-h-0 mx-auto rounded-md overflow-hidden"
+                  style={{
+                    perspective: '1000px',
+                    border: '1px solid #ccc',
+                    background: '#f8f8f8',
+                    width: '100%',
+                  }}
+                >
+                  <div
+                    style={{
+                      ...imageTransformStyle,
+                      transform: `scale(${previewScale}) ${imageTransformStyle.transform}`,
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '1rem',
+                    }}
+                  >
+                    <img
+                      alt="Live Preview"
+                      src={image.src}
+                      style={{
+                        objectFit: 'contain',
+                        maxWidth: 'min(100%, 1200px)',
+                        maxHeight: 'min(100%, 800px)',
+                        width: 'auto',
+                        height: 'auto',
+                        clipPath: percentCrop
+                          ? `inset(${percentCrop.y}% ${100 - (percentCrop.x + percentCrop.width)
+                          }% ${100 - (percentCrop.y + percentCrop.height)
+                          }% ${percentCrop.x}%)`
+                          : 'none',
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
 
-        {isEditing && (
-          <EditorControls
-            verticalPerspective={verticalPerspective}
-            setVerticalPerspective={setVerticalPerspective}
-            horizontalPerspective={horizontalPerspective}
-            setHorizontalPerspective={setHorizontalPerspective}
-            rotate={rotate}
-            setRotate={setRotate}
-            previewScale={previewScale}
-            setPreviewScale={setPreviewScale}
-          />
+            {/* Controls - Compact at bottom */}
+            <div className="mt-3 flex-shrink-0">
+              <EditorControls
+                verticalPerspective={verticalPerspective}
+                setVerticalPerspective={setVerticalPerspective}
+                horizontalPerspective={horizontalPerspective}
+                setHorizontalPerspective={setHorizontalPerspective}
+                rotate={rotate}
+                setRotate={setRotate}
+                previewScale={previewScale}
+                setPreviewScale={setPreviewScale}
+              />
+            </div>
+          </div>
         )}
       </ModalContent>
 

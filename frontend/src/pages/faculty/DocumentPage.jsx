@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GraduationCap, ChevronDown } from 'lucide-react';
 import {
@@ -17,25 +17,25 @@ import { useNotification, useModal } from '../../hooks';
 export default function DocumentPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Basic state
   const [profile, setProfile] = useState(null);
   const [citTor, setCitTor] = useState([]);
   const [applicantTor, setApplicantTor] = useState([]);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
-  
+
   // UI state
   const [activeTab, setActiveTab] = useState('compare');
   const [filterStatus, setFilterStatus] = useState('Void');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
-  
+
   // Modals
   const noteModal = useModal();
   const editModal = useModal();
   const statusModal = useModal();
   const finalizeModal = useModal();
-  
+
   // Edit/Note state
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [noteText, setNoteText] = useState('');
@@ -49,11 +49,7 @@ export default function DocumentPage() {
 
   const { showSuccess, showError } = useNotification();
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [profileData, citTorData, applicantTorData] = await Promise.all([
@@ -72,7 +68,11 @@ export default function DocumentPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showError]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const refreshApplicantTor = async () => {
     try {
@@ -97,7 +97,7 @@ export default function DocumentPage() {
   // Save Note
   const handleSaveNote = async () => {
     if (!selectedEntry) return;
-    
+
     try {
       await torApi.updateNote(selectedEntry.id, noteText);
       await refreshApplicantTor();
@@ -139,7 +139,7 @@ export default function DocumentPage() {
   // Save Status
   const handleSaveStatus = async () => {
     if (!selectedStatus) return;
-    
+
     setProcessing(true);
     try {
       await requestApi.updateRequestStatus(id, selectedStatus);
@@ -161,7 +161,18 @@ export default function DocumentPage() {
       showSuccess('Request finalized successfully.');
       setTimeout(() => navigate('/DepartmentHome'), 1000);
     } catch (error) {
-      showError(error.message || 'Failed to finalize request');
+      console.error('Finalize error:', error);
+
+      // Check if it's the multiple submissions error
+      if (error.message && error.message.includes('returned more than one')) {
+        showError(
+          `Cannot finalize: Student "${id}" has multiple pending requests. ` +
+          `Please contact the system administrator to resolve this issue. ` +
+          `(Backend needs to be updated to handle individual requests)`
+        );
+      } else {
+        showError(error.message || 'Failed to finalize request');
+      }
     } finally {
       setProcessing(false);
       finalizeModal.close();
@@ -292,11 +303,10 @@ export default function DocumentPage() {
                           setFilterStatus(status);
                           setShowFilterDropdown(false);
                         }}
-                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                          filterStatus === status
+                        className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterStatus === status
                             ? 'bg-blue-50 text-blue-600 font-medium'
                             : 'text-gray-700'
-                        }`}
+                          }`}
                       >
                         {status}
                       </button>
@@ -346,13 +356,12 @@ export default function DocumentPage() {
                       </td>
                       <td className="px-4 py-3">{entry.remarks || '—'}</td>
                       <td
-                        className={`px-4 py-3 font-medium text-center ${
-                          entry.credit_evaluation === 'Accepted'
+                        className={`px-4 py-3 font-medium text-center ${entry.credit_evaluation === 'Accepted'
                             ? 'text-green-600'
                             : entry.credit_evaluation === 'Denied'
-                            ? 'text-red-600'
-                            : 'text-gray-500'
-                        }`}
+                              ? 'text-red-600'
+                              : 'text-gray-500'
+                          }`}
                       >
                         {entry.credit_evaluation || 'Void'}
                       </td>
@@ -452,11 +461,10 @@ export default function DocumentPage() {
                         setFilterStatus(status);
                         setShowFilterDropdown(false);
                       }}
-                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${
-                        filterStatus === status
+                      className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterStatus === status
                           ? 'bg-blue-50 text-blue-600 font-medium'
                           : 'text-gray-700'
-                      }`}
+                        }`}
                     >
                       {status}
                     </button>
@@ -508,13 +516,12 @@ export default function DocumentPage() {
                     </td>
                     <td className="px-4 py-3">{entry.remarks || '—'}</td>
                     <td
-                      className={`px-4 py-3 font-medium text-center ${
-                        entry.credit_evaluation === 'Accepted'
+                      className={`px-4 py-3 font-medium text-center ${entry.credit_evaluation === 'Accepted'
                           ? 'text-green-600'
                           : entry.credit_evaluation === 'Denied'
-                          ? 'text-red-600'
-                          : 'text-gray-500'
-                      }`}
+                            ? 'text-red-600'
+                            : 'text-gray-500'
+                        }`}
                     >
                       {entry.credit_evaluation || 'Void'}
                     </td>
