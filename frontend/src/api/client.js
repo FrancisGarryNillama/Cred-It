@@ -1,6 +1,11 @@
+// frontend/src/api/client.js
 import { API_BASE_URL } from './config';
+
+/**
+ * Enhanced API Client with standardized error handling
+ * Handles new backend response format
+ */
 class ApiClient {
- 
   constructor(baseURL) {
     this.baseURL = baseURL;
   }
@@ -19,11 +24,17 @@ class ApiClient {
       const response = await fetch(url, config);
       const data = await response.json().catch(() => ({}));
 
+      // Handle new standardized response format
       if (!response.ok) {
-        throw new Error(data.error || data.detail || `HTTP ${response.status}`);
+        throw new Error(data.message || data.error || `HTTP ${response.status}`);
       }
 
-      return { data, status: response.status };
+      return { 
+        data: data.data || data,
+        message: data.message,
+        status: response.status,
+        success: data.success
+      };
     } catch (error) {
       console.error(`API Error [${endpoint}]:`, error);
       throw error;
@@ -62,12 +73,20 @@ class ApiClient {
       body: formData,
     }).then(async (response) => {
       const data = await response.json().catch(() => ({}));
+      
       if (!response.ok) {
-        throw new Error(data.error || data.detail || `HTTP ${response.status}`);
+        throw new Error(data.message || data.error || `HTTP ${response.status}`);
       }
-      return { data, status: response.status };
+
+      return { 
+        data: data.data || data,
+        message: data.message,
+        status: response.status,
+        success: data.success
+      };
     });
   }
 }
 
+// This is the only export you need from this file
 export const apiClient = new ApiClient(API_BASE_URL);

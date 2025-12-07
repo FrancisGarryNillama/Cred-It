@@ -10,7 +10,7 @@ export default function LoginForm({ onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!accountID || !accountPass) {
       alert('Please fill in all fields');
       return;
