@@ -6,13 +6,15 @@ import { useAuth } from '../hooks/useAuth';
 export default function LoginForm({ onClose }) {
   const [accountID, setAccountID] = useState('');
   const [accountPass, setAccountPass] = useState('');
+  const [error, setError] = useState('');
   const { login, loading } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
     if (!accountID || !accountPass) {
-      alert('Please fill in all fields');
+      setError('Please fill in all fields');
       return;
     }
 
@@ -20,10 +22,17 @@ export default function LoginForm({ onClose }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5">
+      {error && (
+        <div className="p-2.5 sm:p-3 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-lg text-center">
+          {error}
+        </div>
+      )}
+
       <Input
         type="text"
-        placeholder="Account ID"
+        label="Account ID"
+        placeholder="Enter your account ID"
         value={accountID}
         onChange={(e) => setAccountID(e.target.value)}
         icon={User}
@@ -32,21 +41,32 @@ export default function LoginForm({ onClose }) {
 
       <Input
         type="password"
-        placeholder="Password"
+        label="Password"
+        placeholder="Enter your password"
         value={accountPass}
         onChange={(e) => setAccountPass(e.target.value)}
         icon={Lock}
         autoComplete="current-password"
       />
 
-      <Button
-        type="submit"
-        className="w-full"
-        loading={loading}
-        disabled={loading}
-      >
-        Login
-      </Button>
+      <div className="flex gap-2 sm:gap-3 pt-1 sm:pt-2">
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1 text-sm sm:text-base py-2 sm:py-2.5"
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          className="flex-1 text-sm sm:text-base py-2 sm:py-2.5"
+          loading={loading}
+          disabled={loading}
+        >
+          Sign In
+        </Button>
+      </div>
     </form>
   );
 }

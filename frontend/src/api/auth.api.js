@@ -1,58 +1,114 @@
 import { apiClient } from './client';
-import { API_ENDPOINTS } from './config';
+import { API_ENDPOINTS, API_BASE_URL } from './config';
+import { tokenStorage } from '../utils/tokenStorage';
 
 export const authApi = {
   /**
-   * Login API
-   * Sends snake_case keys to backend
-   * @param {string} accountId 
-   * @param {string} accountPass 
+   * Login user and receive JWT tokens
+   * Expected response: { access, refresh, user: { id, username, role } }
    */
-  login: async (accountId, accountPass) => {
-    const { data, ...rest } = await apiClient.post(API_ENDPOINTS.LOGIN, {
-      account_id: accountId,
-      account_pass: accountPass,
+  login: async (accountID, accountPass) => {
+    const { data } = await apiClient.post(API_ENDPOINTS.LOGIN, {
+      AccountID: accountID,
+      AccountPass: accountPass,
     });
-    return { data, ...rest };
+    
+    // Handle JWT token response
+    // Backend should return: { access, refresh, status, message, user_id }
+    const result = {
+      accessToken: data.access || data.token || data.access_token,
+      refreshToken: data.refresh || data.refresh_token,
+      user: {
+        id: data.user_id || accountID,
+        username: accountID,
+        role: data.status, // 'Student' or 'Faculty'
+      },
+      message: data.message,
+    };
+    
+    return result;
   },
 
   /**
-   * Register API
-   * Sends snake_case keys to backend
-   * @param {string} accountId 
-   * @param {string} accountPass 
+   * Register new user
    */
-  register: async (accountId, accountPass) => {
-    const { data, ...rest } = await apiClient.post(API_ENDPOINTS.REGISTER, {
-      account_id: accountId,
-      account_pass: accountPass,
+  register: async (accountID, accountPass) => {
+    const { data } = await apiClient.post(API_ENDPOINTS.REGISTER, {
+      AccountID: accountID,
+      AccountPass: accountPass,
     });
-    return { data, ...rest };
+    return data;
   },
 
   /**
-   * Change password API
-   * @param {string} accountId 
-   * @param {string} oldPassword 
-   * @param {string} newPassword 
+   * Logout user - invalidate tokens on server
    */
-  changePassword: async (accountId, oldPassword, newPassword) => {
-    const { data, ...rest } = await apiClient.post(API_ENDPOINTS.CHANGE_PASSWORD, {
-      account_id: accountId,
-      old_password: oldPassword,
-      new_password: newPassword,
-    });
-    return { data, ...rest };
+  logout: async () => {
+    try {
+      const refreshToken = tokenStorage.getRefreshToken();
+      if (refreshToken) {
+        await apiClient.post(API_ENDPOINTS.LOGOUT, {
+          refresh: refreshToken,
+        });
+      }
+    } catch (error) {
+      // Ignore logout errors - still clear local tokens
+      console.warn('Logout API call failed:', error);
+    } finally {
+      tokenStorage.clearAll();
+    }
   },
 
   /**
-   * Fetch account info
-   * @param {string} accountId 
+   * Refresh access token using refresh token
    */
-  getAccountInfo: async (accountId) => {
-    const { data, ...rest } = await apiClient.get(API_ENDPOINTS.ACCOUNT_INFO, {
-      account_id: accountId,
+  refreshToken: async () => {
+    const refreshToken = tokenStorage.getRefreshToken();
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    // Direct fetch to avoid interceptor loops
+    const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.TOKEN_REFRESH}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh: refreshToken }),
     });
-    return { data, ...rest };
+
+    if (!response.ok) {
+      tokenStorage.clearAll();
+      throw new Error('Token refresh failed');
+    }
+
+    const data = await response.json();
+    tokenStorage.setAccessToken(data.access);
+    
+    return data.access;
+  },
+
+  /**
+   * Verify if current token is still valid
+   */
+  verifyToken: async () => {
+    const accessToken = tokenStorage.getAccessToken();
+    if (!accessToken) {
+      return false;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}${API_ENDPOINTS.TOKEN_VERIFY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: accessToken }),
+      });
+      
+      return response.ok;
+    } catch {
+      return false;
+    }
   },
 };

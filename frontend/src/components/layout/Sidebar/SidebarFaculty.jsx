@@ -1,8 +1,16 @@
 import React from 'react';
 import { Home, Info, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../../features/auth';
 
 export default function SidebarFaculty({ sidebarOpen }) {
+  const { logout, loading } = useAuth();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logout();
+  };
+
   return (
     <>
       <aside
@@ -28,13 +36,14 @@ export default function SidebarFaculty({ sidebarOpen }) {
               <span>About Us</span>
             </Link>
 
-            <Link
-              to="/"
-              className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+            <button
+              onClick={handleLogout}
+              disabled={loading}
+              className="flex items-center gap-3 py-3 px-4 text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-lg transition-colors w-full text-left disabled:opacity-50"
             >
               <LogOut className="w-5 h-5" />
-              <span>Sign Out</span>
-            </Link>
+              <span>{loading ? 'Signing out...' : 'Sign Out'}</span>
+            </button>
           </nav>
         </div>
       </aside>

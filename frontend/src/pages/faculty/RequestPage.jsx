@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GraduationCap } from 'lucide-react';
 import { Button, Loader, ConfirmDialog } from '../../components/common';
@@ -19,11 +19,7 @@ export default function RequestPage() {
 
   const { showSuccess, showError } = useNotification();
 
-  useEffect(() => {
-    fetchData();
-  }, [id]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const [profileData, citTorData, applicantTorData] = await Promise.all([
@@ -42,7 +38,11 @@ export default function RequestPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id, showError]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleAccept = async () => {
     setProcessing(true);

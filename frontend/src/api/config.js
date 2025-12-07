@@ -1,14 +1,17 @@
-export const API_BASE_URL = 'http://127.0.0.1:8000/api';
+export const API_BASE_URL = 'http://localhost:8000/api';
 
 export const API_ENDPOINTS = {
   // Auth
   LOGIN: '/login/',
   REGISTER: '/register/',
-  
+  LOGOUT: '/logout/',
+  TOKEN_REFRESH: '/token/refresh/',
+  TOKEN_VERIFY: '/token/verify/',
+
   // Profile
   PROFILE: '/profile/',
   PROFILE_SAVE: '/profile/save/',
-  
+
   // TOR/OCR
   OCR: '/ocr/',
   OCR_DELETE: '/ocr/delete',
@@ -17,11 +20,11 @@ export const API_ENDPOINTS = {
   UPDATE_TOR_RESULTS: '/update-tor-results/',
   SYNC_COMPLETED: '/sync-completed/',
   COMPARE_RESULT_TOR: '/compareResultTOR/',
-  
+
   // Grading
   APPLY_STANDARD: '/apply-standard/',
   APPLY_REVERSE: '/apply-reverse/',
-  
+
   // Request/Application
   REQUEST_TOR: '/request-tor/',
   REQUEST_TOR_LIST: '/requestTOR/',
@@ -29,20 +32,20 @@ export const API_ENDPOINTS = {
   PENDING_REQUEST_ACCEPT: '/pendingRequest/accept/',
   PENDING_REQUEST_DENY: '/pendingRequest/deny/',
   PENDING_REQUEST_UPDATE_STATUS: '/pendingRequest/update_status_for_document/',
-  
+
   // Final Documents
   FINAL_DOCUMENTS: '/finalDocuments/',
   FINAL_DOCUMENTS_LIST: '/finalDocuments/listFinalTor/',
   FINALIZE_REQUEST: '/finalDocuments/finalize_request/',
-  
+
   // CIT TOR
   CIT_TOR_CONTENT: '/citTorContent/',
   UPDATE_CIT_TOR_ENTRY: '/update_cit_tor_entry/',
-  
+
   // Credit Evaluation
   UPDATE_CREDIT_EVALUATION: '/update_credit_evaluation/',
   UPDATE_NOTE: '/update_note/',
-  
+
   // Tracking
   TRACK_USER_PROGRESS: '/track_user_progress/',
   PENDING_TRACK_PROGRESS: '/pendingRequest/track_user_progress/',
