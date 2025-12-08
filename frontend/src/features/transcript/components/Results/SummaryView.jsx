@@ -1,6 +1,15 @@
 import React from 'react';
 
 export default function SummaryView({ data }) {
+  
+  if (!Array.isArray(data) || data.length === 0) {
+    return (
+      <div className="mt-8 text-center text-gray-500">
+        No summary data available.
+      </div>
+    );
+  }
+  
   return (
     <div className="mt-8">
       <h3 className="font-semibold mb-2 text-center bg-indigo-50 py-2 rounded">
@@ -15,6 +24,7 @@ export default function SummaryView({ data }) {
               <th className="p-2 border">Units</th>
               <th className="p-2 border">Final Grade</th>
               <th className="p-2 border">Remark</th>
+              <th className="p-2 border">Credit Evaluation</th>
               <th className="p-2 border">Summary</th>
             </tr>
           </thead>

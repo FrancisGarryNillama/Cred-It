@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',  # JWT authentication
@@ -49,14 +50,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 # CORS Settings - Allow specific origins for credentials
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",      # React dev server (CRA)
-    "http://localhost:5173",      # Vite dev server
-    "http://127.0.0.1:3000",      # Alternative localhost
-    "http://127.0.0.1:5173",      # Alternative localhost
+    "http://217.216.35.25:3000",      # React dev server (CRA)
+    "http://217.216.35.25:5173",      # Vite dev server
+    "http://217.216.35.25:3000",      # Alternative localhost
+    "http://217.216.35.25:5173",      # Alternative localhost
 ]
 
 # Enable credentials (cookies, authorization headers)

@@ -40,6 +40,24 @@ export default function ProfileForm({ profile, onUpdate }) {
         onChange={(e) => onUpdate('phone', e.target.value)}
         icon={Phone}
       />
+
+      <Input
+        type="text"
+        label="Address"
+        placeholder="Enter your address"
+        value={profile.address}
+        onChange={(e) => onUpdate('address', e.target.value)}
+        icon={MapPin}
+      />
+
+      <Input
+        type="date"
+        label="Date of Birth"
+        placeholder="YYYY-MM-DD"
+        value={profile.date_of_birth || ''}
+        onChange={(e) => onUpdate('date_of_birth', e.target.value)}
+        icon={Calendar}
+      />
     </div>
   );
 }
