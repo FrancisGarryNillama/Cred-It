@@ -53,12 +53,16 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-# CORS Settings - Allow specific origins for credentials
+# CORS Settings
 CORS_ALLOWED_ORIGINS = [
-    "http://217.216.35.25:3000",      # React dev server (CRA)
-    "http://217.216.35.25:5173",      # Vite dev server
-    "http://217.216.35.25:3000",      # Alternative localhost
-    "http://217.216.35.25:5173",      # Alternative localhost
+    "http://217.216.35.25:3000",
+    "http://217.216.35.25:5173",
+    "http://217.216.35.25:3000",
+    "http://217.216.35.25:5173",
+
+    # LOCALHOST
+    "http://localhost:3000",
+    "http://localhost:5173",
 ]
 
 # Enable credentials (cookies, authorization headers)

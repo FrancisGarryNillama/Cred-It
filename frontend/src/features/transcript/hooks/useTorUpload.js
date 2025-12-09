@@ -15,9 +15,13 @@ export function useTorUpload() {
 
     setLoading(true);
     try {
-      const data = await torApi.uploadOcr(images, accountId);
-      setOcrResults(data);
-      return data;
+      const response = await torApi.uploadOcr(images, accountId);
+      console.log('API Response:', response);
+      // Extract the nested data property
+      const torData = response?.data || null;
+      console.log('Extracted TOR data:', torData);
+      setOcrResults(torData);
+      return response;
     } catch (error) {
       console.error('OCR Upload Error:', error);
       showError(error.message || 'Failed to process OCR');

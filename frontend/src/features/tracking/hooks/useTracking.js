@@ -11,17 +11,28 @@ export function useTracking(userName) {
     const fetchProgress = async () => {
       setLoading(true);
       try {
-        // Check RequestTOR
-        const requestRes = await trackingApi.getUserProgress(userName);
-        const inRequest = requestRes.exists;
+        // Helper function to safely fetch and handle 404s
+        const safeFetch = async (fetchFn) => {
+          try {
+            const result = await fetchFn();
+            return result.exists || false;
+          } catch (error) {
+            // 404 means no submission exists - this is OK
+            if (error.message?.includes('404')) {
+              return false;
+            }
+            // Other errors should be logged but not break the flow
+            console.warn('Error checking progress:', error);
+            return false;
+          }
+        };
 
-        // Check PendingRequest
-        const pendingRes = await trackingApi.getPendingProgress(userName);
-        const inPending = pendingRes.exists;
-
-        // Check FinalDocuments
-        const finalRes = await trackingApi.getFinalProgress(userName);
-        const inFinal = finalRes.exists;
+        // Check all three stages
+        const [inRequest, inPending, inFinal] = await Promise.all([
+          safeFetch(() => trackingApi.getUserProgress(userName)),
+          safeFetch(() => trackingApi.getPendingProgress(userName)),
+          safeFetch(() => trackingApi.getFinalProgress(userName)),
+        ]);
 
         // Set progress value
         if (inFinal) setProgress(3);
@@ -30,6 +41,7 @@ export function useTracking(userName) {
         else setProgress(0);
       } catch (err) {
         console.error('Error fetching progress:', err);
+        setProgress(0);
       } finally {
         setLoading(false);
       }

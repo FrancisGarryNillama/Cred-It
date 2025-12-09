@@ -114,8 +114,10 @@ def copy_tor_entries(request):
         serializer.validated_data['account_id']
     )
     
+    result_serializer = CompareResultTORSerializer(entries, many=True)
+    
     return APIResponse.created(
-        data={"count": len(entries)},
+        data=result_serializer.data,
         message=f"Copied {len(entries)} TOR entries successfully"
     )
 

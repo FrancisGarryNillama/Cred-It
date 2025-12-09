@@ -21,12 +21,12 @@ export default function LandingFooter() {
 
           {/* Links - Centered */}
           <div className="flex justify-center space-x-6 order-last sm:order-none">
-            <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors p-2">
+            <button className="text-gray-400 hover:text-blue-600 transition-colors p-2" aria-label="GitHub">
               <Github className="h-5 w-5" />
-            </a>
-            <a href="#" className="text-gray-400 hover:text-blue-600 transition-colors p-2">
+            </button>
+            <button className="text-gray-400 hover:text-blue-600 transition-colors p-2" aria-label="Email">
               <Mail className="h-5 w-5" />
-            </a>
+            </button>
           </div>
 
           {/* Copyright */}

@@ -92,12 +92,12 @@ class Profile(models.Model):
                     'email': 'Invalid email format'
                 })
         
-        # Validate phone if provided
-        if self.phone:
+        # Validate phone if provided (and not empty string)
+        if self.phone and self.phone.strip():
             try:
                 validate_phone_number(self.phone)
             except ValidationError as e:
-                raise ValidationError({'phone': e.message})
+                raise ValidationError({'phone': e.messages if hasattr(e, 'messages') else str(e)})
 
     def save(self, *args, **kwargs):
         """Override save to check completeness and run validation"""

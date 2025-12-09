@@ -84,12 +84,6 @@ export default function DepartmentHome() {
   const filteredApplications = filterData(applications, 'applicant_id');
   const filteredAccepted = filterData(acceptedList, 'accountID');
 
-  const tabs = [
-    { id: 'requests', label: 'Requests', count: filteredRequests.length },
-    { id: 'applications', label: 'Applications', count: filteredApplications.length },
-    { id: 'accepted', label: 'Accepted', count: filteredAccepted.length },
-  ];
-
   const requestColumns = [
     { header: 'REQUEST ID', accessor: 'accountID' },
     { header: "APPLICANT'S NAME", accessor: 'applicant_name' },

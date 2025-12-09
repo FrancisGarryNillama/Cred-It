@@ -71,8 +71,8 @@ export default function HomePage() {
       setShowProcessingModal(false);
 
       // Open results if successful
-      if (result) {
-        console.log('Opening results modal with data:', ocrResults);
+      if (result && result.data) {
+        console.log('Opening results modal with data:', result.data);
         // Small delay to ensure modal transitions smoothly
         setTimeout(() => {
           resultsModal.open();

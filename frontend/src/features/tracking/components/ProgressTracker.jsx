@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTracking } from '../hooks/useTracking';
 import { Button, Loader } from '../../../components/common';
 import TrackerModal from './TrackerModal';
-import { CheckCircle, Circle, Clock, ChevronRight, FileText, Calendar } from 'lucide-react';
+import { CheckCircle, Circle, Clock, ChevronRight } from 'lucide-react';
 
 export default function ProgressTracker({ userName }) {
   const { progress, loading } = useTracking(userName);
@@ -48,10 +48,10 @@ export default function ProgressTracker({ userName }) {
               <div className="flex items-center gap-4">
                 {/* Status Icon */}
                 <div className={`p-3 rounded-full ${progress === 3
-                    ? 'bg-gradient-to-br from-green-500 to-emerald-600'
-                    : progress === 2
-                      ? 'bg-gradient-to-br from-indigo-500 to-purple-600 animate-pulse'
-                      : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                  ? 'bg-gradient-to-br from-green-500 to-emerald-600'
+                  : progress === 2
+                    ? 'bg-gradient-to-br from-indigo-500 to-purple-600 animate-pulse'
+                    : 'bg-gradient-to-br from-blue-500 to-indigo-600'
                   }`}>
                   <CurrentIcon className="w-6 h-6 text-white" />
                 </div>
@@ -72,8 +72,8 @@ export default function ProgressTracker({ userName }) {
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <span className="font-medium">Current Status:</span>
                     <span className={`font-bold ${progress === 3 ? 'text-green-600' :
-                        progress === 2 ? 'text-indigo-600' :
-                          'text-blue-600'
+                      progress === 2 ? 'text-indigo-600' :
+                        'text-blue-600'
                       }`}>
                       {currentStep?.label}
                     </span>
@@ -89,8 +89,8 @@ export default function ProgressTracker({ userName }) {
                     <div
                       key={index}
                       className={`w-2 h-2 rounded-full transition-all ${index < progress
-                          ? 'bg-gradient-to-r from-green-500 to-emerald-600 w-3'
-                          : 'bg-gray-300'
+                        ? 'bg-gradient-to-r from-green-500 to-emerald-600 w-3'
+                        : 'bg-gray-300'
                         }`}
                     />
                   ))}
@@ -152,7 +152,6 @@ export default function ProgressTracker({ userName }) {
                     {steps.map((step, index) => {
                       const isCompleted = index < progress;
                       const isCurrent = index === progress - 1;
-                      const StepIcon = step.icon;
 
                       return (
                         <div

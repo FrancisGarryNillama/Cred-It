@@ -1,4 +1,8 @@
+// Use localhost for development
 export const API_BASE_URL = 'http://localhost:8000/api';
+
+// For production, use the remote server
+// export const API_BASE_URL = 'http://217.216.35.25:8000/api';
 
 export const API_ENDPOINTS = {
   // Auth
