@@ -103,6 +103,10 @@ def validate_phone_number(value: str) -> None:
     Raises:
         ValidationError: If format is invalid
     """
+    # Allow empty/None values (phone is optional)
+    if not value or value.strip() == '':
+        return
+    
     # Remove common separators
     cleaned = re.sub(r'[\s\-\(\)]', '', value)
     

@@ -20,15 +20,22 @@ export const requestApi = {
   },
 
   acceptRequest: async (applicantId) => {
-    const { data } = await apiClient.post(API_ENDPOINTS.PENDING_REQUEST_ACCEPT, {
-      applicant_id: applicantId,
+    const { data } = await apiClient.post(API_ENDPOINTS.ACCEPT_REQUEST, {
+      account_id: applicantId,
     });
     return data;
   },
 
   denyRequest: async (applicantId) => {
     const { data } = await apiClient.delete(
-      `${API_ENDPOINTS.PENDING_REQUEST_DENY}${applicantId}/`
+      `${API_ENDPOINTS.DENY_REQUEST}${applicantId}/`
+    );
+    return data;
+  },
+
+  cancelRequest: async (accountId) => {
+    const { data } = await apiClient.delete(
+      `${API_ENDPOINTS.CANCEL_REQUEST}${accountId}/`
     );
     return data;
   },

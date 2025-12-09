@@ -16,7 +16,6 @@ export default function SubmissionsList({ userName }) {
         );
     }
 
-    // Show empty state if no submissions
     if (submissions.length === 0) {
         return <EmptySubmissionState />;
     }
@@ -67,17 +66,15 @@ export default function SubmissionsList({ userName }) {
 
     return (
         <div className="mt-6 sm:mt-8 space-y-4">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                    Your TOR Submission
+                    Your TOR Submissions
                 </h2>
                 <span className="text-sm text-gray-500">
                     Most recent
                 </span>
             </div>
 
-            {/* Submissions Cards */}
             {submissions.map((submission) => {
                 const StatusIcon = getStatusIcon(submission.progress);
                 const colors = getStatusColor(submission.progress);
@@ -88,24 +85,19 @@ export default function SubmissionsList({ userName }) {
                         key={submission.id}
                         className="relative transition-all duration-300"
                     >
-                        {/* Background glow */}
                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl blur-xl"></div>
 
                         <div className="relative bg-white/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200/50 overflow-hidden">
-                            {/* Compact View */}
                             <button
                                 onClick={() => setExpandedId(isExpanded ? null : submission.id)}
                                 className="w-full p-4 hover:bg-gray-50/50 transition-colors"
                             >
                                 <div className="flex items-center justify-between gap-4">
-                                    {/* Left: Icon and Info */}
                                     <div className="flex items-center gap-3">
-                                        {/* Status Icon */}
                                         <div className={`p-3 sm:p-3.5 rounded-full bg-gradient-to-br ${colors.bg} ${submission.progress === 2 ? 'animate-pulse' : ''}`}>
                                             <StatusIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                                         </div>
 
-                                        {/* Text Info */}
                                         <div className="text-left">
                                             <div className="flex items-center gap-2 mb-0.5">
                                                 <span className="text-base sm:text-lg font-bold text-gray-900">
@@ -126,9 +118,7 @@ export default function SubmissionsList({ userName }) {
                                         </div>
                                     </div>
 
-                                    {/* Right: Progress Indicator and Arrow */}
                                     <div className="flex items-center gap-3">
-                                        {/* Mini Progress */}
                                         <div className="hidden sm:flex items-center gap-1">
                                             {steps.map((_, index) => (
                                                 <div
@@ -141,7 +131,6 @@ export default function SubmissionsList({ userName }) {
                                             ))}
                                         </div>
 
-                                        {/* Arrow */}
                                         <ChevronRight
                                             className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''
                                                 }`}
@@ -150,16 +139,11 @@ export default function SubmissionsList({ userName }) {
                                 </div>
                             </button>
 
-                            {/* Expanded View */}
                             {isExpanded && (
                                 <div className="px-4 pb-4 border-t border-gray-200">
                                     <div className="pt-4">
-                                        {/* Progress Bar */}
                                         <div className="relative mb-4">
-                                            {/* Background Line */}
                                             <div className="absolute top-3 left-0 right-0 h-0.5 bg-gray-200 rounded-full mx-4"></div>
-
-                                            {/* Active Progress Line */}
                                             <div
                                                 className="absolute top-3 left-0 h-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mx-4 transition-all duration-500"
                                                 style={{
@@ -167,7 +151,6 @@ export default function SubmissionsList({ userName }) {
                                                 }}
                                             ></div>
 
-                                            {/* Steps */}
                                             <div className="relative flex items-center justify-between px-2">
                                                 {steps.map((step, index) => {
                                                     const isCompleted = index < submission.progress;
@@ -178,7 +161,6 @@ export default function SubmissionsList({ userName }) {
                                                             key={index}
                                                             className="flex flex-col items-center flex-1"
                                                         >
-                                                            {/* Circle */}
                                                             <div
                                                                 className={`
                                   relative z-10 flex items-center justify-center w-6 h-6 rounded-full transition-all
@@ -198,7 +180,6 @@ export default function SubmissionsList({ userName }) {
                                                                 )}
                                                             </div>
 
-                                                            {/* Label */}
                                                             <span className={`mt-1 text-xs font-medium ${isCompleted || isCurrent ? 'text-gray-900' : 'text-gray-400'}`}>
                                                                 {step}
                                                             </span>
@@ -208,7 +189,6 @@ export default function SubmissionsList({ userName }) {
                                             </div>
                                         </div>
 
-                                        {/* Metadata */}
                                         <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-3">
                                             <div>
                                                 <span className="font-medium">Submitted:</span>

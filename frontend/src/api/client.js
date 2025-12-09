@@ -138,7 +138,9 @@ class ApiClient {
       }
 
       if (!response.ok) {
-        throw new Error(data.error || data.detail || `HTTP ${response.status}`);
+        // Extract error message from various possible fields
+        const errorMessage = data.error || data.message || data.detail || `HTTP ${response.status}`;
+        throw new Error(errorMessage);
       }
 
       return { data, status: response.status };

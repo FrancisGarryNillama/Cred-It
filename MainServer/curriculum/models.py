@@ -24,7 +24,6 @@ class CompareResultTOR(models.Model):
         """Credit evaluation status choices"""
         ACCEPTED = 'Accepted', 'Accepted'
         DENIED = 'Denied', 'Denied'
-        INVESTIGATE = 'Investigate', 'Investigate'
         VOID = 'Void', 'Void'  # Default/initial state
     
     account_id = models.CharField(

@@ -163,13 +163,21 @@ class ProfileService:
         if not user_id:
             raise ValidationException("user_id is required")
         
+        # Clean kwargs: convert empty strings to None for optional fields
+        cleaned_kwargs = {}
+        for key, value in kwargs.items():
+            if value == '' or value == 'null':
+                cleaned_kwargs[key] = None
+            else:
+                cleaned_kwargs[key] = value
+        
         try:
             # Try to get existing profile
             profile = Profile.objects.get(user_id=user_id)
             
             # Update existing profile
-            for key, value in kwargs.items():
-                if hasattr(profile, key) and value is not None:
+            for key, value in cleaned_kwargs.items():
+                if hasattr(profile, key):
                     setattr(profile, key, value)
             
             profile.save()
@@ -180,7 +188,7 @@ class ProfileService:
             # Create new profile
             profile = Profile.objects.create(
                 user_id=user_id,
-                **kwargs
+                **cleaned_kwargs
             )
             
             logger.info(f"Profile created for user: {user_id}")

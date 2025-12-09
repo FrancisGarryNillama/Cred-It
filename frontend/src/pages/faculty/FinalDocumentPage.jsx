@@ -24,11 +24,16 @@ export default function FinalDocumentPage() {
         torApi.getCompareResultTor(id),
       ]);
 
-      if (profileData && profileData.length > 0) {
-        setProfile(profileData[0]);
+      // Extract data from API responses (handle both array and {data: array} formats)
+      const profiles = Array.isArray(profileData) ? profileData : (profileData?.data || []);
+      const citTorList = Array.isArray(citTorData) ? citTorData : (citTorData?.data || []);
+      const applicantTorList = Array.isArray(applicantTorData) ? applicantTorData : (applicantTorData?.data || []);
+
+      if (profiles.length > 0) {
+        setProfile(profiles[0]);
       }
-      setCitTor(citTorData);
-      setApplicantTor(applicantTorData);
+      setCitTor(citTorList);
+      setApplicantTor(applicantTorList);
     } catch (error) {
       showError(error.message || 'Failed to load data');
     } finally {

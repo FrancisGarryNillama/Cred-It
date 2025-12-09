@@ -40,7 +40,8 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
       const errorMsg = error.message || 'Failed to request creditation.';
       showError(errorMsg);
 
-      if (errorMsg.includes('Please Fill up your Profile First')) {
+      // Hide button if profile is incomplete or request already exists
+      if (errorMsg.includes('profile') || errorMsg.includes('pending request')) {
         setHideRequestButton(true);
       }
     } finally {

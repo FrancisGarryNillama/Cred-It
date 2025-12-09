@@ -10,6 +10,7 @@ urlpatterns = [
     path('update_status/', views.update_request_tor_status, name='update_status'),
     path('accept-request/', views.accept_request, name='accept_request'),
     path('deny/<str:applicant_id>/', views.deny_request, name='deny_request'),
+    path('cancel-request/<str:account_id>/', views.cancel_request, name='cancel_request'),
     path('finalize_request/', views.finalize_request, name='finalize_request'),
     path('track_user_progress/', views.track_user_progress, name='track_progress'),
 ]

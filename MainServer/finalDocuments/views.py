@@ -71,13 +71,25 @@ def track_user_progress(request):
     """
     account_id = request.GET.get('accountID')
     
-    exists = WorkflowService.check_progress(
+    documents = WorkflowService.get_workflow_records(
         model=listFinalTor,
         account_id=account_id,
-        field_name='accountID'
+        field_name='accountID',
+        order_by=['-accepted_date']
     )
     
-    return APIResponse.success({'exists': exists})
+    data = []
+    if documents.exists():
+        for doc in documents[:5]:
+            data.append({
+                'id': doc.id,
+                'account_id': doc.accountID,
+                'created_at': doc.accepted_date or doc.request_date,
+                'status': doc.status,
+                'type': 'final'
+            })
+            
+    return APIResponse.success({'data': data, 'exists': len(data) > 0})
 
 
 @api_view(['GET'])

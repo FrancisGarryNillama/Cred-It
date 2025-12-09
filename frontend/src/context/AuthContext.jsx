@@ -177,7 +177,15 @@ export function AuthProvider({ children }) {
         }),
       });
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        // If response is not JSON (e.g. 500 HTML page)
+        console.error('Login response parse error:', parseError);
+        throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      }
+
       console.log('Secure login response:', { status: response.status, data });
 
       if (!response.ok) {
@@ -202,6 +210,7 @@ export function AuthProvider({ children }) {
 
       return { success: true, user: userData };
     } catch (error) {
+      console.error('Login exception:', error);
       const message = error.message || 'Login failed';
       dispatch({ type: 'SET_ERROR', payload: message });
       return { success: false, error: message };

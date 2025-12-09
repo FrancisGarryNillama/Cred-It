@@ -36,8 +36,10 @@ export function useAuth() {
       } else {
         showError(result.error || 'Login failed');
       }
+      return result;
     } catch (error) {
       showError(error.message || 'Login failed');
+      return { success: false, error: error.message };
     } finally {
       setLoading(false);
     }

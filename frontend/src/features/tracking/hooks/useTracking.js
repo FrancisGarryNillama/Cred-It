@@ -15,6 +15,7 @@ export function useTracking(userName) {
         const safeFetch = async (fetchFn) => {
           try {
             const result = await fetchFn();
+            console.log('📡 API Response:', result);
             return result.exists || false;
           } catch (error) {
             // 404 means no submission exists - this is OK
@@ -33,6 +34,8 @@ export function useTracking(userName) {
           safeFetch(() => trackingApi.getPendingProgress(userName)),
           safeFetch(() => trackingApi.getFinalProgress(userName)),
         ]);
+
+        console.log('🔍 Progress check:', { inRequest, inPending, inFinal, userName });
 
         // Set progress value
         if (inFinal) setProgress(3);
