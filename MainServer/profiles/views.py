@@ -43,7 +43,17 @@ def save_profile(request):
             serializer.errors
         )
     
-    profile = ProfileService.save_profile(**serializer.validated_data)
+    try:
+        profile = ProfileService.save_profile(**serializer.validated_data)
+    except Exception as e:
+        # Handle Django ValidationError
+        if hasattr(e, 'message_dict'):
+            # Extract first error message
+            errors = e.message_dict
+            first_field = list(errors.keys())[0]
+            first_error = errors[first_field][0] if isinstance(errors[first_field], list) else errors[first_field]
+            return APIResponse.error(first_error)
+        raise
     
     result_serializer = ProfileSerializer(profile)
     

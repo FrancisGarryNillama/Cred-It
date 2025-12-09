@@ -36,7 +36,12 @@ class JWTCookieAuthentication(JWTAuthentication):
         # if settings.JWT_AUTH_COOKIE in request.COOKIES:
         #     enforce_csrf(request)
 
-        validated_token = self.get_validated_token(raw_token)
+        try:
+            validated_token = self.get_validated_token(raw_token)
+        except Exception:
+            # If token is invalid (expired/bad signature), return None (unauthenticated)
+            # This allows views with AllowAny to proceed (like login)
+            return None
         
         # Custom User Lookup for CreditAccount
         return self.get_user(validated_token), validated_token

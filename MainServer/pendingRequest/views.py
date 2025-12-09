@@ -129,10 +129,22 @@ def track_user_progress(request):
     """
     applicant_id = request.GET.get('applicant_id')
     
-    exists = WorkflowService.check_progress(
+    requests = WorkflowService.get_workflow_records(
         model=PendingRequest,
         account_id=applicant_id,
-        field_name='applicant_id'
+        field_name='applicant_id',
+        order_by=['-request_date']
     )
     
-    return APIResponse.success({'exists': exists})
+    data = []
+    if requests.exists():
+        for req in requests[:5]:
+            data.append({
+                'id': req.id,
+                'account_id': req.applicant_id,
+                'created_at': req.request_date,
+                'status': req.status,
+                'type': 'pending'
+            })
+            
+    return APIResponse.success({'data': data, 'exists': len(data) > 0})

@@ -18,7 +18,7 @@ export const API_ENDPOINTS = {
 
   // TOR/OCR
   OCR: '/ocr/',
-  OCR_DELETE: '/ocr/delete',
+  OCR_DELETE: '/ocr/delete/',
   DEMO_OCR: '/demo-ocr/',
   COPY_TOR: '/copy-tor/',
   UPDATE_TOR_RESULTS: '/update-tor-results/',
@@ -31,10 +31,11 @@ export const API_ENDPOINTS = {
 
   // Request/Application
   REQUEST_TOR: '/request-tor/',
+  CANCEL_REQUEST: '/cancel-request/',
   REQUEST_TOR_LIST: '/requestTOR/',
   PENDING_REQUEST: '/pendingRequest/',
-  PENDING_REQUEST_ACCEPT: '/pendingRequest/accept/',
-  PENDING_REQUEST_DENY: '/pendingRequest/deny/',
+  ACCEPT_REQUEST: '/accept-request/',
+  DENY_REQUEST: '/deny/',
   PENDING_REQUEST_UPDATE_STATUS: '/pendingRequest/update_status_for_document/',
 
   // Final Documents

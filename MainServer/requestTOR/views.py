@@ -43,11 +43,16 @@ def create_request_tor(request):
             "Please complete your profile first. This can be found in the Navbar"
         )
     
+    # Check if request already exists
+    if RequestTOR.objects.filter(accountID=account_id).exists():
+        return APIResponse.error(
+            "You already have a pending request. Please wait for it to be processed."
+        )
+    
     # Create request
     request_tor = RequestTOR.objects.create(
         accountID=account_id,
-        applicant_name=profile.name or account_id,
-        status=RequestTOR.Status.PENDING
+        applicant_name=profile.name or account_id
     )
     
     serializer = RequestTORSerializer(request_tor)
@@ -164,6 +169,32 @@ def deny_request(request, applicant_id):
     )
 
 
+@api_view(['DELETE'])
+@handle_service_exceptions
+def cancel_request(request, account_id):
+    """
+    Cancel request by user. 
+    Only deletes the request and TOR results, preserving the Profile.
+    
+    DELETE /api/cancel-request/<account_id>/
+    """
+    from curriculum.models import CompareResultTOR
+    
+    # Use WorkflowService for bulk cleanup
+    deleted = WorkflowService.bulk_delete_related(
+        account_id=account_id,
+        models_to_clean=[
+            (CompareResultTOR, 'account_id'),
+            (RequestTOR, 'accountID'),
+        ]
+    )
+    
+    return APIResponse.success(
+        deleted,
+        "Request cancelled successfully"
+    )
+
+
 @api_view(['POST'])
 @handle_service_exceptions
 def finalize_request(request):
@@ -205,10 +236,24 @@ def track_user_progress(request):
     """
     account_id = request.GET.get('accountID')
     
-    exists = WorkflowService.check_progress(
+    requests = WorkflowService.get_workflow_records(
         model=RequestTOR,
         account_id=account_id,
-        field_name='accountID'
+        field_name='accountID',
+        order_by=['-request_date']
     )
     
-    return APIResponse.success({'exists': exists})
+    # Return data if exists, else empty list
+    # We serialize basic info
+    data = []
+    if requests.exists():
+        for req in requests[:5]:  # Limit to 5
+            data.append({
+                'id': req.id,
+                'account_id': req.accountID,
+                'created_at': req.request_date,
+                'status': req.status,
+                'type': 'request'
+            })
+            
+    return APIResponse.success({'data': data, 'exists': len(data) > 0})

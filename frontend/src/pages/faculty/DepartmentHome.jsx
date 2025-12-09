@@ -44,9 +44,10 @@ export default function DepartmentHome() {
         requestApi.getFinalDocuments(),
       ]);
 
-      setRequests(requestsData);
-      setApplications(applicationsData);
-      setAcceptedList(acceptedData);
+      // Extract arrays from API responses (handle both array and {data: array} formats)
+      setRequests(Array.isArray(requestsData) ? requestsData : (requestsData?.data || []));
+      setApplications(Array.isArray(applicationsData) ? applicationsData : (applicationsData?.data || []));
+      setAcceptedList(Array.isArray(acceptedData) ? acceptedData : (acceptedData?.data || []));
     } catch (error) {
       showError(error.message || 'Failed to fetch data');
     } finally {

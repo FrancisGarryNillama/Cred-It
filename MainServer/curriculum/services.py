@@ -5,7 +5,7 @@ All curriculum comparison logic should be here.
 from typing import List, Dict, Optional, Tuple
 from difflib import SequenceMatcher
 from django.db.models import QuerySet, Q
-from django.db import transaction
+from django.db import transaction, models
 from core.exceptions import (
     ValidationException,
     ResourceNotFoundException,
@@ -250,6 +250,7 @@ class CurriculumService:
             raise ResourceNotFoundException("Transferee TOR entries", account_id)
         
         compare_entries = []
+        created_count = 0
         
         for entry in transferee_entries:
             compare_entry, created = CompareResultTOR.objects.get_or_create(
@@ -265,11 +266,13 @@ class CurriculumService:
                 }
             )
             
+            # Add all entries (both new and existing)
+            compare_entries.append(compare_entry)
             if created:
-                compare_entries.append(compare_entry)
+                created_count += 1
         
         logger.info(
-            f"Copied {len(compare_entries)} new TOR entries "
+            f"Copied {created_count} new TOR entries (total: {len(compare_entries)}) "
             f"for account: {account_id}"
         )
         
@@ -328,7 +331,7 @@ class CurriculumService:
                 if best_accuracy >= 80 and tor.is_passing_grade:
                     tor.credit_evaluation = CompareResultTOR.CreditEvaluation.ACCEPTED
                 elif best_accuracy >= 50:
-                    tor.credit_evaluation = CompareResultTOR.CreditEvaluation.INVESTIGATE
+                    tor.credit_evaluation = CompareResultTOR.CreditEvaluation.VOID
                 else:
                     tor.credit_evaluation = CompareResultTOR.CreditEvaluation.DENIED
             else:
@@ -477,9 +480,6 @@ class CurriculumService:
             ).count(),
             'denied': entries.filter(
                 credit_evaluation=CompareResultTOR.CreditEvaluation.DENIED
-            ).count(),
-            'investigate': entries.filter(
-                credit_evaluation=CompareResultTOR.CreditEvaluation.INVESTIGATE
             ).count(),
             'void': entries.filter(
                 credit_evaluation=CompareResultTOR.CreditEvaluation.VOID

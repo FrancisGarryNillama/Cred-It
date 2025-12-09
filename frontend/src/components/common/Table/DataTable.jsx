@@ -25,11 +25,14 @@ export function DataTable({
     );
   }
 
+  // Ensure data is always an array (Rebuild Trigger)
+  const safeData = Array.isArray(data) ? data : [];
+
   // Calculate pagination
-  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const totalPages = Math.ceil(safeData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentData = data.slice(startIndex, endIndex);
+  const currentData = safeData.slice(startIndex, endIndex);
 
   const goToPage = (page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
@@ -82,13 +85,13 @@ export function DataTable({
       </div>
 
       {/* Pagination - Large, Clear for Older Users - Always Shown */}
-      {data.length > 0 && (
+      {safeData.length > 0 && (
         <div className="flex items-center justify-between bg-white rounded-xl border border-gray-200 p-4 sm:p-5">
           {/* Info */}
           <div className="text-sm sm:text-base text-gray-700 font-medium">
             Showing <span className="font-bold text-gray-900">{startIndex + 1}</span> to{' '}
-            <span className="font-bold text-gray-900">{Math.min(endIndex, data.length)}</span> of{' '}
-            <span className="font-bold text-gray-900">{data.length}</span> entries
+            <span className="font-bold text-gray-900">{Math.min(endIndex, safeData.length)}</span> of{' '}
+            <span className="font-bold text-gray-900">{safeData.length}</span> entries
           </div>
 
           {/* Pagination Controls */}

@@ -27,7 +27,7 @@ export default function DocumentPage() {
 
   // UI state
   const [activeTab, setActiveTab] = useState('compare');
-  const [filterStatus, setFilterStatus] = useState('Void');
+  const [filterStatus, setFilterStatus] = useState('All');
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   // Modals
@@ -58,11 +58,20 @@ export default function DocumentPage() {
         torApi.getCompareResultTor(id),
       ]);
 
-      if (profileData && profileData.length > 0) {
-        setProfile(profileData[0]);
+      // Extract data from API responses
+      console.log('📦 Raw API responses:', { profileData, citTorData, applicantTorData });
+
+      const profiles = Array.isArray(profileData) ? profileData : (profileData?.data || []);
+      const citTorList = Array.isArray(citTorData) ? citTorData : (citTorData?.data || []);
+      const applicantTorList = Array.isArray(applicantTorData) ? applicantTorData : (applicantTorData?.data || []);
+
+      console.log('✅ Extracted arrays:', { profiles, citTorList, applicantTorList });
+
+      if (profiles.length > 0) {
+        setProfile(profiles[0]);
       }
-      setCitTor(citTorData);
-      setApplicantTor(applicantTorData);
+      setCitTor(citTorList);
+      setApplicantTor(applicantTorList);
     } catch (error) {
       showError(error.message || 'Failed to load data');
     } finally {
@@ -77,7 +86,8 @@ export default function DocumentPage() {
   const refreshApplicantTor = async () => {
     try {
       const data = await torApi.getCompareResultTor(id);
-      setApplicantTor(data);
+      const applicantTorList = Array.isArray(data) ? data : (data?.data || []);
+      setApplicantTor(applicantTorList);
     } catch (error) {
       showError('Failed to refresh data');
     }
@@ -304,8 +314,8 @@ export default function DocumentPage() {
                           setShowFilterDropdown(false);
                         }}
                         className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterStatus === status
-                            ? 'bg-blue-50 text-blue-600 font-medium'
-                            : 'text-gray-700'
+                          ? 'bg-blue-50 text-blue-600 font-medium'
+                          : 'text-gray-700'
                           }`}
                       >
                         {status}
@@ -357,10 +367,10 @@ export default function DocumentPage() {
                       <td className="px-4 py-3">{entry.remarks || '—'}</td>
                       <td
                         className={`px-4 py-3 font-medium text-center ${entry.credit_evaluation === 'Accepted'
-                            ? 'text-green-600'
-                            : entry.credit_evaluation === 'Denied'
-                              ? 'text-red-600'
-                              : 'text-gray-500'
+                          ? 'text-green-600'
+                          : entry.credit_evaluation === 'Denied'
+                            ? 'text-red-600'
+                            : 'text-gray-500'
                           }`}
                       >
                         {entry.credit_evaluation || 'Void'}
@@ -462,8 +472,8 @@ export default function DocumentPage() {
                         setShowFilterDropdown(false);
                       }}
                       className={`w-full text-left px-4 py-2 text-sm hover:bg-gray-100 ${filterStatus === status
-                          ? 'bg-blue-50 text-blue-600 font-medium'
-                          : 'text-gray-700'
+                        ? 'bg-blue-50 text-blue-600 font-medium'
+                        : 'text-gray-700'
                         }`}
                     >
                       {status}
@@ -517,10 +527,10 @@ export default function DocumentPage() {
                     <td className="px-4 py-3">{entry.remarks || '—'}</td>
                     <td
                       className={`px-4 py-3 font-medium text-center ${entry.credit_evaluation === 'Accepted'
-                          ? 'text-green-600'
-                          : entry.credit_evaluation === 'Denied'
-                            ? 'text-red-600'
-                            : 'text-gray-500'
+                        ? 'text-green-600'
+                        : entry.credit_evaluation === 'Denied'
+                          ? 'text-red-600'
+                          : 'text-gray-500'
                         }`}
                     >
                       {entry.credit_evaluation || 'Void'}

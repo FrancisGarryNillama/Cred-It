@@ -28,11 +28,16 @@ export default function RequestPage() {
         torApi.getCompareResultTor(id),
       ]);
 
-      if (profileData && profileData.length > 0) {
-        setProfile(profileData[0]);
+      // Extract data from API responses
+      const profiles = Array.isArray(profileData) ? profileData : (profileData?.data || []);
+      const citTorList = Array.isArray(citTorData) ? citTorData : (citTorData?.data || []);
+      const applicantTorList = Array.isArray(applicantTorData) ? applicantTorData : (applicantTorData?.data || []);
+
+      if (profiles.length > 0) {
+        setProfile(profiles[0]);
       }
-      setCitTor(citTorData);
-      setApplicantTor(applicantTorData);
+      setCitTor(citTorList);
+      setApplicantTor(applicantTorList);
     } catch (error) {
       showError(error.message || 'Failed to load data');
     } finally {
@@ -172,23 +177,43 @@ export default function RequestPage() {
                   <th className="px-3 py-2 font-medium">Description</th>
                   <th className="px-3 py-2 font-medium">Units</th>
                   <th className="px-3 py-2 font-medium">Final Grade</th>
+                  <th className="px-3 py-2 font-medium">Evaluation</th>
                   <th className="px-3 py-2 font-medium">Remarks</th>
                 </tr>
               </thead>
               <tbody>
                 {applicantTor.length > 0 ? (
-                  applicantTor.map((entry, index) => (
-                    <tr key={index} className="border-b hover:bg-gray-50">
-                      <td className="px-3 py-2">{entry.subject_code}</td>
-                      <td className="px-3 py-2">{entry.subject_description}</td>
-                      <td className="px-3 py-2">{entry.total_academic_units}</td>
-                      <td className="px-3 py-2">{entry.final_grade}</td>
-                      <td className="px-3 py-2">{entry.remarks}</td>
-                    </tr>
-                  ))
+                  applicantTor.map((entry, index) => {
+                    // Color coding for evaluation status - matching student modal
+                    let statusColor = 'bg-gray-100 text-gray-700';
+                    if (entry.credit_evaluation === 'Accepted') {
+                      statusColor = 'bg-green-100 text-green-700 border border-green-200';
+                    } else if (entry.credit_evaluation === 'Denied') {
+                      statusColor = 'bg-red-100 text-red-700 border border-red-200';
+                    } else if (entry.credit_evaluation === 'Void') {
+                      statusColor = 'bg-orange-100 text-orange-700 border border-orange-200';
+                    } else if (entry.credit_evaluation === 'Investigate') {
+                      statusColor = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+                    }
+
+                    return (
+                      <tr key={index} className="border-b hover:bg-gray-50">
+                        <td className="px-3 py-2 font-medium">{entry.subject_code}</td>
+                        <td className="px-3 py-2">{entry.subject_description}</td>
+                        <td className="px-3 py-2">{entry.total_academic_units}</td>
+                        <td className="px-3 py-2">{entry.final_grade}</td>
+                        <td className="px-3 py-2">
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}>
+                            {entry.credit_evaluation || 'Pending'}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">{entry.remarks}</td>
+                      </tr>
+                    );
+                  })
                 ) : (
                   <tr>
-                    <td colSpan="5" className="px-3 py-3 text-center text-gray-500">
+                    <td colSpan="6" className="px-3 py-3 text-center text-gray-500">
                       No applicant TOR found.
                     </td>
                   </tr>

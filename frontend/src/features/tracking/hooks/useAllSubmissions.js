@@ -27,7 +27,17 @@ export function useAllSubmissions(userName) {
                     }
                 };
 
-                // Fetch all submissions from RequestTOR, PendingRequest, and FinalDocuments
+                // Helper function to extract array of submissions
+                // Returns an array, empty if not found
+                const extractSubmissions = (res) => {
+                    if (!res) return [];
+                    if (Array.isArray(res)) return res;
+                    if (res.data && Array.isArray(res.data)) return res.data;
+                    if (res.exists && res.data && Array.isArray(res.data)) return res.data;
+                    // If old format { exists: true }, we don't have details, ignore or handle differently
+                    return [];
+                };
+
                 const [requestRes, pendingRes, finalRes] = await Promise.all([
                     safeFetch(() => trackingApi.getUserProgress(userName)),
                     safeFetch(() => trackingApi.getPendingProgress(userName)),
@@ -36,46 +46,53 @@ export function useAllSubmissions(userName) {
 
                 const allSubmissions = [];
 
-                // Add finalized submissions
-                if (finalRes.exists) {
+                // Process RequestTOR
+                const requests = extractSubmissions(requestRes);
+                requests.forEach(req => {
                     allSubmissions.push({
-                        id: `final-${userName}`,
-                        accountId: userName,
-                        status: 'Finalized',
-                        progress: 3,
-                        createdAt: finalRes.created_at || finalRes.date_created || new Date().toISOString(),
-                        updatedAt: finalRes.updated_at || finalRes.date_updated || new Date().toISOString(),
-                    });
-                }
-
-                // Add pending submissions
-                if (pendingRes.exists) {
-                    allSubmissions.push({
-                        id: `pending-${userName}`,
-                        accountId: userName,
-                        status: 'Pending',
-                        progress: 2,
-                        createdAt: pendingRes.created_at || pendingRes.date_created || new Date().toISOString(),
-                        updatedAt: pendingRes.updated_at || pendingRes.date_updated || new Date().toISOString(),
-                    });
-                }
-
-                // Add request submissions
-                if (requestRes.exists) {
-                    allSubmissions.push({
-                        id: `request-${userName}`,
-                        accountId: userName,
+                        id: req.id || `request-${req.account_id}`,
+                        accountId: req.account_id,
                         status: 'Request',
                         progress: 1,
-                        createdAt: requestRes.created_at || requestRes.date_created || new Date().toISOString(),
-                        updatedAt: requestRes.updated_at || requestRes.date_updated || new Date().toISOString(),
+                        createdAt: req.created_at || new Date().toISOString(),
+                        updatedAt: req.updated_at || new Date().toISOString(),
                     });
-                }
+                });
 
-                // Sort by progress (highest first) and limit to 1 (most recent only)
+                // Process PendingRequest
+                const pending = extractSubmissions(pendingRes);
+                pending.forEach(req => {
+                    allSubmissions.push({
+                        id: req.id || `pending-${req.account_id}`,
+                        accountId: req.account_id,
+                        status: 'Pending',
+                        progress: 2,
+                        createdAt: req.created_at || new Date().toISOString(),
+                        updatedAt: req.updated_at || new Date().toISOString(),
+                    });
+                });
+
+                // Process FinalDocuments
+                const finalDocs = extractSubmissions(finalRes);
+                finalDocs.forEach(doc => {
+                    allSubmissions.push({
+                        id: doc.id || `final-${doc.account_id}`,
+                        accountId: doc.account_id,
+                        status: 'Finalized',
+                        progress: 3,
+                        createdAt: doc.created_at || new Date().toISOString(),
+                        updatedAt: doc.updated_at || new Date().toISOString(),
+                    });
+                });
+
+                // Sort by date (newest first) and limit to 3
+                // Prioritize progress, then date?
+                // Actually, typically we want to see the most recent activity.
+                // If a user has a finalized one and a new request, show both?
+                // Let's sort by createdAt descending.
                 const sortedSubmissions = allSubmissions
-                    .sort((a, b) => b.progress - a.progress)
-                    .slice(0, 1);
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .slice(0, 3); // Limit to 3
 
                 setSubmissions(sortedSubmissions);
             } catch (err) {
