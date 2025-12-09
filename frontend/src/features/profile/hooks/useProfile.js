@@ -8,6 +8,8 @@ import { torApi, trackingApi, requestApi } from "../../../api";
  * Profile hook - Updated for new backend
  * Backend now uses snake_case and standardized responses
  */
+const formatDate = (date) => (date ? new Date(date).toISOString().split('T')[0] : '');
+
 export function useProfile(userId) {
   const [profile, setProfile] = useState({
     user_id: userId || '',
@@ -34,7 +36,7 @@ export function useProfile(userId) {
         if (data) {
           // Map backend response to state
           setProfile({
-            user_id: data.user_id,
+            user_id: data.user_id || userId,
             name: data.name || '',
             school_name: data.school_name || '',
             email: data.email || '',
