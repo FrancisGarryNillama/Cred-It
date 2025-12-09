@@ -47,7 +47,7 @@ class TorTransferee(models.Model):
         help_text='Subject/course code'
     )
     subject_description = models.CharField(
-        max_length=255,
+        max_length=500,  # Increased from 255 for long subject names
         help_text='Full subject description'
     )
     student_year = models.CharField(
@@ -55,13 +55,13 @@ class TorTransferee(models.Model):
         help_text='Year level when taken'
     )
     pre_requisite = models.CharField(
-        max_length=255,
+        max_length=500,  # Increased from 255 for multiple prerequisites
         blank=True,
         null=True,
         help_text='Pre-requisite subjects'
     )
     co_requisite = models.CharField(
-        max_length=255,
+        max_length=500,  # Increased from 255 for multiple corequisites
         blank=True,
         null=True,
         help_text='Co-requisite subjects'

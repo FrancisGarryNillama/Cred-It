@@ -1,6 +1,5 @@
 import React from 'react';
 import { Menu, User, GraduationCap, Sparkles } from 'lucide-react';
-import { Button } from '../common';
 
 export default function Header({ toggleSidebar, userName }) {
   return (

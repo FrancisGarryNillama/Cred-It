@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     # Third party apps
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',  # JWT authentication
+    'rest_framework_simplejwt.token_blacklist',  # Token blacklisting for logout
     'django_extensions',
     
     # Local apps - using AppConfig for better organization
@@ -93,9 +95,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / 'static',
+# ]  # Commented out - create 'static' directory if needed
 
 # Media files
 MEDIA_URL = '/media/'
@@ -129,6 +131,54 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
     'DATE_FORMAT': '%Y-%m-%d',
 }
+
+# ============================================================================
+# JWT & AUTHENTICATION SETTINGS
+# ============================================================================
+
+from datetime import timedelta
+
+# JWT Settings for Simple JWT
+SIMPLE_JWT = {
+    # Token Lifetimes
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  # Short-lived access token
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Default refresh token (can be extended)
+    
+    # Token Rotation & Blacklisting
+    'ROTATE_REFRESH_TOKENS': True,          # Generate new refresh token on refresh
+    'BLACKLIST_AFTER_ROTATION': True,       # Blacklist old tokens (prevents reuse)
+    'UPDATE_LAST_LOGIN': True,              # Update last_login field on login
+    
+    # Algorithm & Signing
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': os.getenv('SECRET_KEY', 'django-insecure-default-key'),
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+    
+    # Token Headers
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    
+    # Token Claims
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+    
+    # Sliding Tokens (not used, but configured)
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+}
+
+# Cookie Settings for JWT (httpOnly + Secure + SameSite)
+JWT_AUTH_COOKIE = 'access_token'          # Cookie name for access token
+JWT_AUTH_REFRESH_COOKIE = 'refresh_token' # Cookie name for refresh token
+JWT_AUTH_SECURE = False                    # Will be overridden in production
+JWT_AUTH_HTTPONLY = True                   # Prevent JavaScript access (XSS protection)
+JWT_AUTH_SAMESITE = 'Lax'                 # CSRF protection ('Strict' or 'Lax')
+JWT_AUTH_COOKIE_PATH = '/'                 # Cookie path
 
 # Logging configuration
 LOGGING = {

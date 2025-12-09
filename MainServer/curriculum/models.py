@@ -39,7 +39,7 @@ class CompareResultTOR(models.Model):
         help_text='Subject/course code'
     )
     subject_description = models.CharField(
-        max_length=255,
+        max_length=500,  # Increased from 255 for long subject names
         help_text='Full subject description'
     )
     total_academic_units = models.FloatField(
@@ -51,7 +51,7 @@ class CompareResultTOR(models.Model):
         help_text='Final grade received (1.0 - 5.0 scale)'
     )
     remarks = models.CharField(
-        max_length=255,
+        max_length=500,  # Increased from 255 for longer remarks
         blank=True,
         null=True,
         help_text='Grading remarks (PASSED/FAILED)'

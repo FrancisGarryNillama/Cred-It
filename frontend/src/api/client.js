@@ -143,7 +143,10 @@ class ApiClient {
 
       return { data, status: response.status };
     } catch (error) {
-      console.error(`API Error [${endpoint}]:`, error);
+      // Don't log 404 errors - they're expected when resources don't exist
+      if (!error.message?.includes('404')) {
+        console.error(`API Error [${endpoint}]:`, error);
+      }
       throw error;
     }
   }

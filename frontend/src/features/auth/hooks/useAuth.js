@@ -8,7 +8,7 @@ export function useAuth() {
   const navigate = useNavigate();
   const location = useLocation();
   const { showSuccess, showError } = useNotification();
-  const { login: contextLogin, logout: contextLogout, user } = useAuthContext();
+  const { login: contextLogin, logout: contextLogout } = useAuthContext();
   const [loading, setLoading] = useState(false);
 
   const login = async (accountID, accountPass) => {

@@ -36,6 +36,9 @@ if not CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGINS == ['']:
     raise ValueError("CORS_ALLOWED_ORIGINS must be set in production")
 CORS_ALLOW_CREDENTIALS = True
 
+# JWT Cookie Security - enable secure flag for production (HTTPS only)
+JWT_AUTH_SECURE = True
+
 # Database - with connection pooling
 DATABASES = {
     'default': {

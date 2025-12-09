@@ -9,6 +9,8 @@ export function useProfile(userId) {
     school_name: '',
     email: '',
     phone: '',
+    address: '',
+    date_of_birth: '',
   });
   const [loading, setLoading] = useState(false);
   const [profileExists, setProfileExists] = useState(false);
@@ -26,6 +28,10 @@ export function useProfile(userId) {
           setProfileExists(true);
         }
       } catch (error) {
+        // 404 is expected when profile doesn't exist yet - not an error
+        if (!error.message?.includes('404')) {
+          console.warn('Profile fetch error:', error);
+        }
         setProfileExists(false);
         setProfile({
           user_id: userId,
@@ -33,6 +39,8 @@ export function useProfile(userId) {
           school_name: '',
           email: '',
           phone: '',
+          address: '',
+          date_of_birth: '',
         });
       } finally {
         setLoading(false);

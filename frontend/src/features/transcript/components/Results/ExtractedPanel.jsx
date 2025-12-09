@@ -60,9 +60,38 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
     try {
       // Copy TOR entries
       const copyResult = await torApi.copyTor(accountId);
+      console.log('copyTor returned:', copyResult);
+
+      // Check if we have valid response
+      if (!copyResult || !copyResult.data) {
+        console.error('Invalid response - copyResult:', copyResult);
+        throw new Error('Invalid response from server. Please try again.');
+      }
+
+      // Handle case where data is {count: 0} instead of array
+      let torEntries = [];
+      if (Array.isArray(copyResult.data)) {
+        torEntries = copyResult.data;
+      } else if (copyResult.data.count === 0) {
+        // No entries to process
+        showError('No TOR entries found to process. Please upload your transcript first.');
+        setShowConfirmPanel(false);
+        setIsProcessing(false);
+        return;
+      } else {
+        console.error('Unexpected data format:', copyResult.data);
+        throw new Error('Unexpected data format from server.');
+      }
+
+      if (torEntries.length === 0) {
+        showError('No TOR entries found to process.');
+        setShowConfirmPanel(false);
+        setIsProcessing(false);
+        return;
+      }
 
       // Process remarks
-      const processedData = (copyResult.data || []).map((row) => {
+      const processedData = torEntries.map((row) => {
         const units = parseFloat(row.total_academic_units);
         let remarks = 'Failed / Invalid Units';
         if (units && !isNaN(units) && units > 0 && units <= 15) {
@@ -91,7 +120,7 @@ export default function ExtractedPanel({ data, accountId, isOpen, onClose }) {
       showSuccess('Result processed successfully! Click "Completed" to finalize.');
     } catch (err) {
       console.error('Error processing TOR:', err);
-      showError('Error occurred while processing results.');
+      showError(err.message || 'Error occurred while processing results.');
     } finally {
       setIsProcessing(false);
     }

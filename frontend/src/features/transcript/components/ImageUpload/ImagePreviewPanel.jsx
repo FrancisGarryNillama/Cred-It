@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalContent, ModalFooter, Button, Loader } from '../../../../components/common';
+import { Modal, ModalContent, ModalFooter, Button } from '../../../../components/common';
 import { Edit3, Eye, Download, Image as ImageIcon, Sparkles } from 'lucide-react';
 
 export default function ImagePreviewPanel({

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { CheckCircle, Circle, Clock, ChevronRight, Calendar } from 'lucide-react';
+import { CheckCircle, Circle, Clock, ChevronRight } from 'lucide-react';
 import { useAllSubmissions } from '../hooks/useAllSubmissions';
 import { Loader } from '../../../components/common';
+import EmptySubmissionState from './EmptySubmissionState';
 
 export default function SubmissionsList({ userName }) {
     const { submissions, loading } = useAllSubmissions(userName);
@@ -15,8 +16,9 @@ export default function SubmissionsList({ userName }) {
         );
     }
 
+    // Show empty state if no submissions
     if (submissions.length === 0) {
-        return null;
+        return <EmptySubmissionState />;
     }
 
     const getStatusIcon = (progress) => {

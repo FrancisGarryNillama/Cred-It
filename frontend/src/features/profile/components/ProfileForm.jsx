@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, School, Mail, Phone } from 'lucide-react';
+import { User, School, Mail, Phone, MapPin, Calendar } from 'lucide-react';
 import { Input } from '../../../components/common';
 
 export default function ProfileForm({ profile, onUpdate }) {

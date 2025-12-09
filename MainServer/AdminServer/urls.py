@@ -28,7 +28,6 @@ urlpatterns = [
     path("api/", include("requestTOR.urls")), 
     path("api/pendingRequest/", include("pendingRequest.urls")),
     path("api/finalDocuments/", include("finalDocuments.urls")),
-    path('', include('torchecker.urls')),
 ]
 
 # Serve media files in development
