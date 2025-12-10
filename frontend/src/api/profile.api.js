@@ -3,11 +3,9 @@ import { API_ENDPOINTS } from './config';
 
 export const profileApi = {
   getProfile: async (userId) => {
-    const { data } = await apiClient.get(API_ENDPOINTS.PROFILE, {
-      user_id: userId,
-    });
-    return data;
-  },
+  const response = await apiClient.get(`${API_ENDPOINTS.PROFILE}${userId}/`);
+  return response.data; // Extract data from standardized response
+  }, 
 
   getProfileById: async (userId) => {
     const { data } = await apiClient.get(`${API_ENDPOINTS.PROFILE}${userId}/`);
