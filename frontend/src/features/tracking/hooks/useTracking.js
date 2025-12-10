@@ -2,6 +2,9 @@
 /**
  * Tracking hook - Updated for new backend
  */
+import { useState, useEffect, useNotification } from 'react';
+import { trackingApi } from '../../../api';
+
 export function useTracking(userName) {
   const [progress, setProgress] = useState(0);
   const [loading, setLoading] = useState(false);

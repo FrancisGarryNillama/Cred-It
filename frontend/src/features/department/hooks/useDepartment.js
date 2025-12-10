@@ -27,10 +27,11 @@ export function useDepartment() {
         requestApi.getFinalDocuments(),     // Returns array
       ]);
 
-      // Assuming requestApi results are already unwrapped arrays/objects
-      setRequests(requestsData);
-      setApplications(applicationsData);
-      setAccepted(acceptedData);
+      // Extract the data array from the API response object
+      // The backend returns { success: true, data: [...], ... }
+      setRequests(requestsData.data || []);
+      setApplications(applicationsData.data || []);
+      setAccepted(acceptedData.data || []);
     } catch (error) {
       showError(error.message || 'Failed to fetch data');
     } finally {
@@ -44,7 +45,7 @@ export function useDepartment() {
   const acceptRequest = useCallback(async (accountId) => {
     try {
       const data = await requestApi.acceptRequest(accountId);
-      
+
       showSuccess(data.message || 'Request accepted successfully');
       await fetchAllData(); // Refresh all data
       return true;
@@ -60,7 +61,7 @@ export function useDepartment() {
   const denyRequest = useCallback(async (accountId) => {
     try {
       const data = await requestApi.denyRequest(accountId);
-      
+
       const totalDeleted = Object.values(data).reduce((sum, count) => sum + count, 0);
       showSuccess(`Request denied. Removed ${totalDeleted} record(s).`);
       await fetchAllData(); // Refresh all data
@@ -77,7 +78,7 @@ export function useDepartment() {
   const finalizeRequest = useCallback(async (accountId) => {
     try {
       const data = await requestApi.finalizeRequest(accountId);
-      
+
       showSuccess(data.message || 'Request finalized successfully');
       await fetchAllData(); // Refresh all data
       return true;
@@ -93,7 +94,7 @@ export function useDepartment() {
   const updateStatus = useCallback(async (accountId, status) => {
     try {
       const data = await requestApi.updateRequestStatus(accountId, status);
-      
+
       showSuccess(data.message || `Status updated to "${status}"`);
       await fetchAllData(); // Refresh all data
       return true;
