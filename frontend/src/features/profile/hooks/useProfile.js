@@ -2,14 +2,12 @@
 import { useState, useEffect } from 'react';
 import { profileApi } from '../../../api';
 import { useNotification } from '../../../hooks';
-import { torApi, trackingApi, requestApi } from "../../../api"; 
 
 /**
  * Profile hook - Updated for new backend
- * Backend now uses snake_case and standardized responses
+ * Backend now uses snake_case and standardized APIResponse format
+ * All data is pre-extracted via extractData() helper in API layer
  */
-const formatDate = (date) => (date ? new Date(date).toISOString().split('T')[0] : '');
-
 export function useProfile(userId) {
   const [profile, setProfile] = useState({
     user_id: userId || '',
@@ -24,13 +22,16 @@ export function useProfile(userId) {
   const [profileExists, setProfileExists] = useState(false);
   const { showSuccess, showError } = useNotification();
 
+  /**
+   * Fetch profile on mount or when userId changes
+   */
   useEffect(() => {
     if (!userId) return;
 
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        // Backend returns: { success: true, data: { user_id, name, ... } }
+        // API returns unwrapped data: { user_id, name, school_name, ... }
         const data = await profileApi.getProfile(userId);
         
         if (data) {
@@ -47,7 +48,7 @@ export function useProfile(userId) {
           setProfileExists(true);
         }
       } catch (error) {
-        // Profile doesn't exist yet
+        // Profile doesn't exist yet (404 error)
         setProfileExists(false);
         setProfile({
           user_id: userId,
@@ -66,15 +67,41 @@ export function useProfile(userId) {
     fetchProfile();
   }, [userId]);
 
+  /**
+   * Update a single profile field
+   */
   const updateProfile = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
+  /**
+   * Save profile to backend
+   * Backend auto-creates if doesn't exist, updates if exists
+   */
   const saveProfile = async () => {
+    // Validate required fields
+    if (!profile.name || !profile.school_name) {
+      showError('Name and School Name are required');
+      return false;
+    }
+
     setLoading(true);
     try {
-      // Backend auto-creates or updates
+      // Backend returns saved profile data
       const data = await profileApi.saveProfile(profile);
+      
+      // Update local state with saved data (in case backend modified anything)
+      if (data) {
+        setProfile({
+          user_id: data.user_id || profile.user_id,
+          name: data.name || profile.name,
+          school_name: data.school_name || profile.school_name,
+          email: data.email || profile.email,
+          phone: data.phone || profile.phone,
+          address: data.address || profile.address,
+          date_of_birth: data.date_of_birth || profile.date_of_birth,
+        });
+      }
       
       showSuccess('Profile saved successfully!');
       setProfileExists(true);
@@ -87,22 +114,36 @@ export function useProfile(userId) {
     }
   };
 
+  /**
+   * Check if profile exists for user
+   * Uses try-catch on getProfile (404 = doesn't exist)
+   */
   const checkExists = async () => {
     try {
-      const exists = await profileApi.checkExists(userId);
-      setProfileExists(exists);
-      return exists;
+      await profileApi.getProfile(userId);
+      setProfileExists(true);
+      return true;
     } catch (error) {
+      // 404 means profile doesn't exist
+      if (error.message?.includes('404')) {
+        setProfileExists(false);
+        return false;
+      }
+      // Other errors should be logged
+      console.error('Error checking profile existence:', error);
       return false;
     }
   };
 
   return {
+    // State
     profile,
+    loading,
+    profileExists,
+
+    // Methods
     updateProfile,
     saveProfile,
     checkExists,
-    loading,
-    profileExists,
   };
 }

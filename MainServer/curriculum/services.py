@@ -301,6 +301,7 @@ class CurriculumService:
         
         cit_contents = CitTorContent.objects.filter(is_active=True)
         result_data = []
+        updated_entries = []
         
         for tor in tor_entries:
             best_match = None
@@ -343,7 +344,8 @@ class CurriculumService:
                 )
                 tor.credit_evaluation = CompareResultTOR.CreditEvaluation.INVESTIGATE
             
-            tor.save(update_fields=['summary', 'credit_evaluation', 'updated_at'])
+            # Add to bulk update list instead of saving individually
+            updated_entries.append(tor)
             
             result_data.append({
                 "subject_code": tor.subject_code,
@@ -356,6 +358,13 @@ class CurriculumService:
                 "match_accuracy": int(best_accuracy) if best_match else 0,
                 "matched_subject": best_match.subject_code if best_match else None
             })
+        
+        # Bulk update all entries at once (preserves data)
+        CompareResultTOR.objects.bulk_update(
+            updated_entries,
+            ['summary', 'credit_evaluation', 'updated_at'],
+            batch_size=100
+        )
         
         logger.info(
             f"Synced {len(result_data)} entries with curriculum matching "
