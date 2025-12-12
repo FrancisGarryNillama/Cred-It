@@ -12,7 +12,7 @@ from core.decorators import handle_service_exceptions
 from .services.ocr_service import OCRService
 from .services.tor_service import TorService
 from .serializers import TorTransfereeSerializer, UniqueStudentSerializer
-from .models import TorTransferee
+from .models import TorTransferee, TorDocument
 from curriculum.models import CitTorContent
 import logging
 
@@ -108,6 +108,23 @@ def ocr_view(request):
                 entries=result['entries']
             )
             
+            # Save file to TorDocument
+            try:
+                # We need the original file for this result
+                # result['file_name'] matches the uploaded file name
+                original_file = next(
+                    (f for f in files if f.name == result.get('file_name')), 
+                    None
+                )
+                
+                if original_file:
+                    TorDocument.objects.create(
+                        account_id=account_id,
+                        file=original_file
+                    )
+            except Exception as e:
+                logger.error(f"Failed to save TorDocument: {e}")
+
             # Convert to dict for response
             for entry in saved:
                 all_entries.append({
