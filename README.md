@@ -11,7 +11,8 @@ A comprehensive Django application designed for managing the **transfer credit e
     * [Local Development Setup](#local-development-setup)
     * [Docker Setup](#docker-setup)
 4.  [📂 Project Structure](#-project-structure)
-5.  [🌟 Project Context](#-project-context)
+5.  [🔐 Demo Accounts](#-demo-accounts)
+6.  [🌟 Project Context](#-project-context)
 
 ---
 
@@ -27,6 +28,8 @@ This system streamlines the entire credit evaluation pipeline:
 * **📊 Flexible Credit Evaluation**: Supports both standard and reverse grading systems for accurate credit allocation.
 * **📈 Analytics & Reporting**: Provides comprehensive statistics and reports on the evaluation process and results.
 * **🔒 Production-Ready Security**: Implements proper authentication and authorization mechanisms for a secure deployment.
+
+---
 
 ## 🛠️ Tech Stack
 
@@ -54,88 +57,13 @@ Ensure you have the following installed on your system:
 * `Redis 7+`
 * `Node.js 18+` (Required for the separate frontend application, if applicable)
 
+---
+
 ### Local Development Setup
 
 Follow these steps to get the application running locally:
 
-1.  **Clone the repository**
-    ```bash
-    git clone [https://github.com/yourusername/credit-system.git](https://github.com/yourusername/credit-system.git)
-    cd credit-system
-    ```
-
-2.  **Create virtual environment**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # Windows: venv\Scripts\activate
-    ```
-
-3.  **Install dependencies**
-    ```bash
-    pip install -r requirements.txt
-    pip install -r requirements-dev.txt
-    ```
-
-4.  **Set up environment variables**
-    ```bash
-    cp .env.example .env
-    # NOTE: You must edit the newly created .env file with your specific database/API configurations.
-    ```
-
-5.  **Set up database**
-    ```bash
-    createdb credit_system
-    python manage.py migrate
-    python manage.py setup_initial_data
-    ```
-
-6.  **Create superuser**
-    ```bash
-    python manage.py createsuperuser
-    ```
-
-7.  **Run development server**
-    ```bash
-    export DJANGO_ENV=development # Set environment flag
-    python manage.py runserver
-    ```
-
-8.  **Access the application**
-    The application should now be accessible at:
-    * **API**: `http://localhost:8000/api/`
-    * **Admin**: `http://localhost:8000/admin/`
-
-### Docker Setup
-
-For containerized deployment, use Docker Compose:
-
-1.  **Build and run with Docker Compose**
-    ```bash
-    docker-compose up -d
-    ```
-
-2.  **Run migrations**
-    ```bash
-    docker-compose exec web python manage.py migrate
-    ```
-
-3.  **Create superuser**
-    ```bash
-    docker-compose exec web python manage.py createsuperuser
-    ```
-
----
-
-## 📂 Project Structure
-
-*(**Note**: This section is typically used to provide a high-level view of the repository's folders and files.)*
-
-*Content Here*
-
----
-
-## 🌟 Project Context
-
-### Cred-It
-
-This project serves as the Transferee Accreditation System for the **CIT-U CCS Department** and was developed as a Capstone Project for **IT332**.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/credit-system.git
+   cd credit-system
