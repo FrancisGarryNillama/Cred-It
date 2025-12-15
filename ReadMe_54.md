@@ -98,12 +98,15 @@ A comprehensive Django application for managing transfer credit evaluation and T
 
 # Test Credit System - Login Credentials
  Student Login
-- **Username:** James
-- **Password:** James552
+```bash
+- Username: James
+- Password: James552
+```
  Department Login
-- **Username:** DeptTeacher
-- **Password:** 05212365
----
+```bash
+- Username: DeptTeacher
+- Password: 05212365
+```
 
 ## Project Structure
 # Cred-It
