@@ -96,6 +96,15 @@ A comprehensive Django application for managing transfer credit evaluation and T
    docker-compose exec web python manage.py createsuperuser
 ```
 
+# Test Credit System - Login Credentials
+## Student Login
+- **Username:** James
+- **Password:** James552
+## Department Login
+- **Username:** DeptTeacher
+- **Password:** 05212365
+---
+
 ## Project Structure
 # Cred-It
 Transferee Accreditation System for CIT-U CCS Department / Capstone Project for IT332
